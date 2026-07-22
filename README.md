@@ -1,10 +1,10 @@
 # 微信 - 路明非
 
-一个基于 Vue 3 + Express 构建的类微信聊天界面，以《龙族》中的路明非为视角，可与楚子航、诺诺、凯撒、芬格尔等角色进行 AI 对话。
+一个基于 Vue 3 构建的类微信聊天界面，以《龙族》中的路明非为视角，展示与楚子航、诺诺、凯撒、芬格尔等角色的聊天记录。
 
 ## ✨ 功能特性
 
-- 💬 **聊天功能** - 与 AI 驱动的角色进行对话，支持流式输出
+- 💬 **聊天功能** - 展示预设的聊天记录
 - 👥 **联系人列表** - 展示最近聊天记录
 - 📇 **通讯录** - 按字母排序的联系人列表
 - 📷 **朋友圈** - 好友动态展示
@@ -22,8 +22,6 @@
 ## 🛠 技术栈
 
 - **前端**: Vue 3 + Vite + Tailwind CSS + Vue Router
-- **后端**: Express + Node.js
-- **AI 服务**: DeepSeek API
 
 ## 🚀 快速开始
 
@@ -38,23 +36,7 @@
 npm install
 ```
 
-### 配置 API 密钥
-
-在项目根目录创建 `.env` 文件，并填入你的 DeepSeek API Key：
-
-```env
-DEEPSEEK_API_KEY=your_api_key_here
-```
-
-### 启动服务
-
-**启动后端服务**:
-
-```bash
-node api/server.js
-```
-
-**启动前端服务**（另开一个终端）:
+### 启动开发服务器
 
 ```bash
 npm run dev
@@ -62,12 +44,67 @@ npm run dev
 
 访问 `http://localhost:5173` 即可使用。
 
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+构建产物将输出到 `dist/` 目录。
+
+## 🌐 部署到 GitHub Pages
+
+### 方法一：手动部署
+
+1. 构建项目：
+   ```bash
+   npm run build
+   ```
+
+2. 创建 `gh-pages` 分支并推送 `dist/` 目录：
+   ```bash
+   git checkout -b gh-pages
+   git add -f dist
+   git commit -m "deploy: build for gh-pages"
+   git subtree push --prefix dist origin gh-pages
+   ```
+
+3. 在 GitHub 仓库设置中开启 Pages：
+   - 进入仓库 → Settings → Pages
+   - Source 选择 `gh-pages` 分支 → 保存
+
+### 方法二：GitHub Actions（推荐）
+
+在 `.github/workflows/deploy.yml` 创建以下配置：
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+```
+
 ## 📁 项目结构
 
 ```
 .
-├── api/                    # 后端代码
-│   └── server.js           # Express 服务器
+├── character/              # 角色头像图片
 ├── src/                    # 前端代码
 │   ├── views/              # 页面组件
 │   │   ├── Contacts.vue    # 联系人页面
@@ -79,21 +116,11 @@ npm run dev
 │   ├── App.vue             # 主应用组件
 │   ├── main.js             # 入口文件
 │   └── style.css           # 全局样式
-├── .env                    # 环境变量
 ├── .gitignore              # Git 忽略配置
 ├── package.json            # 项目依赖
 ├── vite.config.js          # Vite 配置
 └── tailwind.config.js      # Tailwind CSS 配置
 ```
-
-## 📝 API 接口
-
-| 接口 | 方法 | 描述 |
-|------|------|------|
-| `/api/chat` | POST | 发送聊天消息（支持流式） |
-| `/api/contacts` | GET | 获取联系人列表 |
-| `/api/profile` | GET | 获取个人信息 |
-| `/api/moments` | GET | 获取朋友圈动态 |
 
 ## 📄 许可证
 
