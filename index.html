@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>路明非的微信</title>
+    <title>微信</title>
     <style>
         :root {
             --wechat-green: #07C160;
@@ -406,7 +406,7 @@
             left: 0;
             right: 0;
             height: 100%;
-            background-image: url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/chenlu1.png');
+            background-image: url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/chenlu.png');
             background-size: cover;
             background-position: center;
             z-index: 0;
@@ -530,6 +530,59 @@
             max-height: 300px;
             object-fit: cover;
             display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .img-wrapper {
+            position: relative;
+            background: #F5F5F5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .img-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F5F5F5;
+            color: #CCC;
+            font-size: 24px;
+            z-index: 1;
+        }
+        .img-wrapper img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .img-wrapper img.loaded {
+            opacity: 1;
+        }
+        .img-wrapper img.error {
+            opacity: 0;
+        }
+
+        .avatar {
+            background: #DDD;
+        }
+        .avatar img {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .avatar img.loaded {
+            opacity: 1;
+        }
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .my-page {
@@ -759,22 +812,22 @@
                         <div class="chat-meta"><span class="chat-time">星期二</span><span class="badge">3</span></div>
                     </div>
                     <div class="chat-item" onclick="openChat('nono')">
-                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
                         <div class="chat-info"><div class="chat-name">诺诺</div><div class="chat-preview">晚了 苏茜已读</div></div>
                         <div class="chat-meta"><span class="chat-time">星期四</span></div>
                     </div>
                     <div class="chat-item" onclick="openChat('kaisa')">
-                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
                         <div class="chat-info"><div class="chat-name">凯撒</div><div class="chat-preview">……送口红讲究光谱分析，楚子航是人类吗？</div></div>
                         <div class="chat-meta"><span class="chat-time">周一</span></div>
                     </div>
                     <div class="chat-item" onclick="openChat('finger')">
-                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
                         <div class="chat-info"><div class="chat-name">芬格尔</div><div class="chat-preview">师弟请吃饭！食堂新出了猪肘子</div></div>
                         <div class="chat-meta"><span class="chat-time">星期五</span><span class="badge">1</span></div>
                     </div>
                     <div class="chat-item" onclick="openChat('chuzihang')">
-                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
                         <div class="chat-info"><div class="chat-name">楚子航</div><div class="chat-preview">建议录入教材当反面案例</div></div>
                         <div class="chat-meta"><span class="chat-time">星期六</span></div>
                     </div>
@@ -801,20 +854,20 @@
                     </div>
                     <div class="contact-section" id="sec-C">
                         <div class="contact-letter">C</div>
-                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div><span class="contact-name">陈墨瞳（诺诺）</span></div>
-                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div><span class="contact-name">楚子航</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div><span class="contact-name">陈墨瞳（诺诺）</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div><span class="contact-name">楚子航</span></div>
                     </div>
                     <div class="contact-section" id="sec-F">
                         <div class="contact-letter">F</div>
-                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div><span class="contact-name">芬格尔</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div><span class="contact-name">芬格尔</span></div>
                     </div>
                     <div class="contact-section" id="sec-K">
                         <div class="contact-letter">K</div>
-                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div><span class="contact-name">凯撒·加图索</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div><span class="contact-name">凯撒·加图索</span></div>
                     </div>
                     <div class="contact-section" id="sec-L">
                         <div class="contact-letter">L</div>
-                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div><span class="contact-name">路明非（自己）</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div><span class="contact-name">路明非（自己）</span></div>
                     </div>
                     <div class="contact-section" id="sec-N">
                         <div class="contact-letter">N</div>
@@ -846,19 +899,19 @@
                         <div class="moments-cover-bg" id="coverBg"></div>
                         <!-- 头像 & 名字 放在封面内部，通过 bottom 负值溢出 -->
                         <div class="moments-profile-avatar" id="profileAvatar">
-                            <img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" />
+                            <img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" />
                         </div>
                         <div class="moments-profile-name" id="profileName">路明非</div>
                     </div>
                     <!-- 朋友圈列表 -->
                     <div class="moments-list">
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">诺诺</div>
                                 <div class="moment-text">路明非刚才信誓旦旦地说他学会了煮咖啡，专门给我做了一杯。端上来的时候我觉得颜色不对，问他放了什么。他说"速溶咖啡粉加冷水，然后用微波炉加热了一下"。微波炉。速溶。冷水。我宣布路明非被永久禁止进入任何厨房。</div>
                                 <div class="moment-images">
-                                    <img class="moment-image" src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/coffee.jpg" alt="颜色可疑的咖啡" />
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/coffee.jpg" alt="颜色可疑的咖啡" />
                                 </div>
                                 <div class="moment-time">2小时前</div>
                                 <div class="moment-likes">❤️ 苏茜, 凯撒·加图索, 零, 芬格尔, 楚子航</div>
@@ -866,7 +919,7 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">芬格尔</div>
                                 <div class="moment-text">新发现的宝藏窗口！食堂新出的德国猪肘子绝了 🍖 配上黑啤，简直人生巅峰！</div>
@@ -876,7 +929,7 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">诺诺</div>
                                 <div class="moment-text">卡塞尔的星空总是这么亮。有时候觉得，这些星星比外面的世界真实多了 ✨</div>
@@ -886,7 +939,7 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">凯撒·加图索</div>
                                 <div class="moment-text">今天的击剑训练，状态不错。下周的校际赛，卡塞尔必胜 ⚔️</div>
@@ -895,12 +948,12 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">路明非</div>
                                 <div class="moment-text">诺诺让我帮她取快递，说是"小件，很轻"。我去了。是一箱画册。二十本。从校门口搬到女生宿舍，穿越半个校园，中间休息了四次。芬格尔路过看到我，说"师弟你在干嘛"，我说"帮诺诺搬快递"，他说"加油"然后走了。走了。他甚至没有减速。</div>
                                 <div class="moment-images">
-                                    <img class="moment-image" src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/59ed87ef670578e4920fd989aa18b1268699742e/lmf.jpg" alt="摞得老高的纸箱" />
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/59ed87ef670578e4920fd989aa18b1268699742e/lmf.jpg" alt="摞得老高的纸箱" />
                                 </div>
                                 <div class="moment-time">8小时前</div>
                                 <div class="moment-likes">❤️ 诺诺, 芬格尔, 苏茜, 楚子航, 零, 凯撒·加图索</div>
@@ -908,12 +961,12 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">楚子航</div>
                                 <div class="moment-text">今日对路明非进行了近身格斗教学。课程内容：如何在被压制的情况下反击。演示环节我用了他当示范对象，三次演示后他举手说"师兄我学会了"，我问学会了什么，他说"学会了以后尽量不要被你压制"。这个总结方向不对，但逻辑上没有问题。明天继续。</div>
                                 <div class="moment-images">
-                                    <img class="moment-image" src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/czh.jpg" alt="训练垫子一角" />
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/czh.jpg" alt="训练垫子一角" />
                                 </div>
                                 <div class="moment-time">一天前</div>
                                 <div class="moment-likes">❤️ 路明非, 苏茜, 诺诺, 芬格尔, 零, 凯撒·加图索</div>
@@ -921,7 +974,7 @@
                             </div>
                         </div>
                         <div class="moment-item">
-                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
                             <div class="moment-content">
                                 <div class="moment-author">路明非</div>
                                 <div class="moment-text">又是通宵打游戏的一天...明天还要早起训练 😭</div>
@@ -938,7 +991,7 @@
                 <div class="page-header">我</div>
                 <div class="my-page" style="flex:1;overflow-y:auto;">
                     <div class="my-profile-card">
-                        <div class="my-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                        <div class="my-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
                         <div class="my-info"><div class="my-name">路明非</div><div class="my-wechat-id">微信号：LuMingfei_Sakura</div></div>
                         <span>›</span>
                     </div>
@@ -1173,7 +1226,7 @@
                     const row = document.createElement('div');
                     row.className = 'msg-row self';
                     row.innerHTML =
-                        `<div class="msg-avatar"><img src="${AVATARS.lumingfei}" alt="我"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
+                        `<div class="msg-avatar"><img class="lazy" data-src="${AVATARS.lumingfei}" alt="我" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
                     chatMessages.appendChild(row);
                 } else if (msg.type === 'other') {
                     let avatarUrl = data.avatarUrl || '';
@@ -1187,7 +1240,7 @@
                         '';
                     if (avatarUrl) {
                         row.innerHTML =
-                            `<div class="msg-avatar"><img src="${avatarUrl}" alt=""></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                            `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
                     } else {
                         row.innerHTML =
                             `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
@@ -1195,7 +1248,10 @@
                     chatMessages.appendChild(row);
                 }
             });
-            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 30);
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                triggerLazyLoad();
+            }, 30);
         }
 
         function sendMessage() {
@@ -1285,6 +1341,139 @@
             if (coverBg) coverBg.style.opacity = '1';
             if (avatar) avatar.style.opacity = '1';
             if (nameEl) nameEl.style.opacity = '1';
+        })();
+
+        // ============================================================
+        //  🔥 图片加载优化：懒加载 + 占位符 + 加载状态
+        // ============================================================
+        (function initImageOptimization() {
+            const imageCache = {};
+
+            function preloadImage(url, callback) {
+                if (imageCache[url]) {
+                    callback(imageCache[url]);
+                    return;
+                }
+                const img = new Image();
+                img.onload = function() {
+                    imageCache[url] = true;
+                    callback(true);
+                };
+                img.onerror = function() {
+                    imageCache[url] = false;
+                    callback(false);
+                };
+                img.src = url;
+            }
+
+            function setupImageLoading() {
+                const allImages = document.querySelectorAll('img[data-src]');
+                
+                allImages.forEach(img => {
+                    const src = img.getAttribute('data-src');
+                    if (!src) return;
+
+                    img.onload = function() {
+                        img.classList.remove('loading');
+                        img.classList.add('loaded');
+                        img.style.opacity = '1';
+                    };
+
+                    img.onerror = function() {
+                        img.classList.remove('loading');
+                        img.classList.add('error');
+                    };
+
+                    img.src = src;
+                });
+            }
+
+            function setupLazyLoading() {
+                const lazyImages = document.querySelectorAll('img.lazy');
+                
+                const lazyLoad = (entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            const src = img.getAttribute('data-src');
+                            if (src) {
+                                img.src = src;
+                                img.removeAttribute('data-src');
+                                img.classList.remove('lazy');
+                            }
+                            observer.unobserve(img);
+                        }
+                    });
+                };
+
+                const observer = new IntersectionObserver(lazyLoad, {
+                    rootMargin: '50px',
+                    threshold: 0.1
+                });
+
+                lazyImages.forEach(img => observer.observe(img));
+                
+                window.triggerLazyLoad = function() {
+                    const newLazyImages = document.querySelectorAll('img.lazy');
+                    newLazyImages.forEach(img => {
+                        const src = img.getAttribute('data-src');
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                            img.classList.remove('lazy');
+                        }
+                    });
+                };
+            }
+
+            function setupAvatarLoading() {
+                const avatarImgs = document.querySelectorAll('.avatar img, .my-avatar img, .moment-avatar img');
+                
+                avatarImgs.forEach(img => {
+                    img.onload = function() {
+                        img.classList.add('loaded');
+                        const placeholder = img.parentElement.querySelector('.avatar-placeholder');
+                        if (placeholder) placeholder.style.display = 'none';
+                    };
+                    img.onerror = function() {
+                        const initials = img.alt.charAt(0) || '?';
+                        const placeholder = img.parentElement.querySelector('.avatar-placeholder');
+                        if (placeholder) {
+                            placeholder.textContent = initials;
+                            placeholder.style.display = 'flex';
+                        }
+                    };
+                });
+            }
+
+            function setupMomentImageLoading() {
+                const momentImages = document.querySelectorAll('.moment-image');
+                
+                momentImages.forEach(img => {
+                    img.onload = function() {
+                        img.classList.add('loaded');
+                        const wrapper = img.parentElement;
+                        if (wrapper) wrapper.classList.add('loaded');
+                    };
+                    img.onerror = function() {
+                        img.classList.add('error');
+                    };
+                });
+            }
+
+            window.addEventListener('load', function() {
+                setupImageLoading();
+                setupLazyLoading();
+                setupAvatarLoading();
+                setupMomentImageLoading();
+            });
+
+            if (document.readyState === 'interactive') {
+                setupImageLoading();
+                setupLazyLoading();
+                setupAvatarLoading();
+                setupMomentImageLoading();
+            }
         })();
     </script>
 </body>
