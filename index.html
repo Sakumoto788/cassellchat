@@ -1,12 +1,1278 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>微信 - 路明非</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>路明非的微信</title>
+    <style>
+        :root {
+            --wechat-green: #07C160;
+            --wechat-dark: #1A1A1A;
+            --wechat-bg: #EDEDED;
+            --wechat-white: #FFFFFF;
+            --bubble-green: #95EC69;
+            --text-primary: #1A1A1A;
+            --text-secondary: #888888;
+            --divider: #E5E5E5;
+            --red-dot: #F43530;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 430px;
+            height: 92vh;
+            max-height: 900px;
+            background: #000;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 3px #1a1a1a, 0 0 0 6px #2a2a2a, 0 0 0 8px #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .status-bar {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .status-bar .time {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 11px;
+        }
+        .status-icons .battery {
+            width: 22px;
+            height: 10px;
+            border: 1.5px solid #fff;
+            border-radius: 2px;
+            padding: 1.5px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .status-icons .battery::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.5px;
+            height: 4px;
+            background: #fff;
+            border-radius: 0 1px 1px 0;
+        }
+        .status-icons .battery-fill {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 1px;
+        }
+
+        .main-content {
+            flex: 1;
+            background: #EDEDED;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            background: #EDEDED;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        .chat-detail-page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            background: #EDEDED;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+        .chat-detail-page.active {
+            display: flex;
+        }
+
+        .page-header {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+        }
+        .page-header .back-btn {
+            position: absolute;
+            left: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #FFF;
+            background: none;
+            border: none;
+        }
+        .page-header .header-action {
+            position: absolute;
+            right: 16px;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.8;
+            background: none;
+            border: none;
+            color: #FFF;
+            padding: 4px;
+        }
+
+        .search-bar {
+            padding: 8px 14px;
+            flex-shrink: 0;
+            background: #EDEDED;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            background: #FFF;
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #F0F0F0;
+            gap: 12px;
+            position: relative;
+        }
+        .chat-item:active {
+            background: #E8E8E8;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #DDD;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .avatar-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #DDD;
+        }
+        .mini-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-color: #CCC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 11px;
+            color: #FFF;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .chat-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1A1A1A;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-preview {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .chat-time {
+            font-size: 11px;
+            color: #B0B0B0;
+        }
+        .badge {
+            background: #F43530;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+            position: relative;
+        }
+        .contact-section {
+            padding: 0;
+        }
+        .contact-letter {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            background: #EDEDED;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+        }
+        .contact-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+        .contact-name {
+            font-size: 15px;
+            color: #1A1A1A;
+        }
+        .letter-index {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+            z-index: 3;
+            padding: 4px 2px;
+            line-height: 1.6;
+        }
+        .letter-index span {
+            padding: 1px 3px;
+            cursor: pointer;
+            border-radius: 2px;
+            text-align: center;
+        }
+        .letter-index span:hover {
+            color: #07C160;
+            background: rgba(7, 193, 96, 0.08);
+        }
+
+        /* ===== 朋友圈 - 修复显示不全 ===== */
+        .moments-header {
+            background: #1A1A1A;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .moments-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            color: #FFF;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .moments-top-bar .title {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* 滚动容器 */
+        .moments-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 封面 — 关键修复：overflow 改为 visible，让头像和名字可以溢出显示 */
+        .moments-cover {
+            height: 220px;
+            position: relative;
+            overflow: visible;          /* 修复：允许头像和名字溢出显示 */
+            flex-shrink: 0;
+            will-change: height, opacity;
+        }
+
+        /* 背景层 — 高度跟随父容器，避免溢出 */
+        .moments-cover-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/chenlu.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            will-change: opacity;
+        }
+
+        /* 头像 — 部分在封面内，部分在封面外 */
+        .moments-profile-avatar {
+            position: absolute;
+            bottom: -24px;             /* 向下溢出24px */
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            border: 3px solid #FFF;
+            overflow: hidden;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            will-change: opacity;
+            transition: opacity 0.05s;
+        }
+        .moments-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 名字 — 完全在封面外部 */
+        .moments-profile-name {
+            position: absolute;
+            bottom: -30px;             /* 向下溢出30px */
+            right: 92px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+            z-index: 2;
+            will-change: opacity;
+            transition: opacity 0.05s;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 朋友圈列表 */
+        .moments-list {
+            background: #FFF;
+            padding-top: 36px;          /* 给头像和名字留出空间，避免重叠 */
+        }
+        .moment-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            gap: 10px;
+        }
+        .moment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .moment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .moment-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .moment-author {
+            font-size: 14px;
+            font-weight: 600;
+            color: #576B95;
+            margin-bottom: 4px;
+        }
+        .moment-text {
+            font-size: 14px;
+            color: #1A1A1A;
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+        .moment-time {
+            font-size: 11px;
+            color: #B0B0B0;
+            margin-bottom: 4px;
+        }
+        .moment-likes {
+            background: #F7F7F7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #576B95;
+            margin-top: 4px;
+        }
+        .moment-comments {
+            background: #F7F7F7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #333;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+        .comment-author {
+            color: #576B95;
+            font-weight: 500;
+        }
+        .moment-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 6px;
+            max-width: 100%;
+        }
+        .moment-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .my-page {
+            background: #EDEDED;
+        }
+        .my-profile-card {
+            background: #FFF;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 8px solid #EDEDED;
+            cursor: pointer;
+        }
+        .my-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .my-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .my-info {
+            flex: 1;
+        }
+        .my-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+        .my-wechat-id {
+            font-size: 13px;
+            color: #888;
+        }
+        .my-menu-section {
+            background: #FFF;
+            margin-bottom: 8px;
+        }
+        .my-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            display: flex;
+            background: #F7F7F7;
+            border-top: 1px solid #E0E0E0;
+            padding: 6px 0;
+            flex-shrink: 0;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            color: #888;
+            font-size: 10px;
+            position: relative;
+        }
+        .nav-item.active {
+            color: #07C160;
+        }
+        .nav-icon {
+            font-size: 22px;
+        }
+        .nav-badge {
+            position: absolute;
+            top: 0;
+            right: 50%;
+            transform: translateX(22px);
+            background: #F43530;
+            color: #FFF;
+            font-size: 10px;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .chat-detail-header {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .chat-detail-back {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #FFF;
+        }
+        .chat-detail-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #EDEDED;
+        }
+        .msg-row {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+            align-items: flex-start;
+        }
+        .msg-row.self {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-row.other {
+            align-self: flex-start;
+        }
+        .msg-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .msg-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .msg-bubble {
+            padding: 10px 13px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .msg-row.self .msg-bubble {
+            background: #95EC69;
+            color: #1A1A1A;
+        }
+        .msg-row.other .msg-bubble {
+            background: #FFF;
+            color: #1A1A1A;
+        }
+        .msg-system {
+            text-align: center;
+            font-size: 11px;
+            color: #B0B0B0;
+            padding: 4px 0;
+        }
+        .chat-input-bar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #F7F7F7;
+            border-top: 1px solid #E0E0E0;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: 1px solid #E0E0E0;
+            font-size: 14px;
+            outline: none;
+            background: #FFF;
+        }
+        .chat-send-btn {
+            padding: 8px 16px;
+            background: #07C160;
+            color: #FFF;
+            border: none;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">21:36</span>
+            <div class="status-icons">
+                <span>5G</span> <span>📶</span>
+                <div class="battery"><div class="battery-fill" style="width:75%;"></div></div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <!-- ===== 联系人 ===== -->
+            <div class="page active" id="page-contacts">
+                <div class="page-header">微信<button class="header-action">🔍</button></div>
+                <div class="search-bar"><div class="search-input">🔍 搜索</div></div>
+                <div class="chat-list">
+                    <div class="chat-item" onclick="openChat('group')">
+                        <div class="avatar-group">
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg');"></div>
+                            <div class="mini-avatar" style="background:#FF8C69; font-size:14px;">八</div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-name">不聊正事只聊八卦</div>
+                            <div class="chat-preview">芬格尔：你们听说了吗？学院后山...</div>
+                        </div>
+                        <div class="chat-meta"><span class="chat-time">星期二</span><span class="badge">3</span></div>
+                    </div>
+                    <div class="chat-item" onclick="openChat('nono')">
+                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                        <div class="chat-info"><div class="chat-name">诺诺</div><div class="chat-preview">晚了 苏茜已读</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期四</span></div>
+                    </div>
+                    <div class="chat-item" onclick="openChat('kaisa')">
+                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                        <div class="chat-info"><div class="chat-name">凯撒</div><div class="chat-preview">……送口红讲究光谱分析，楚子航是人类吗？</div></div>
+                        <div class="chat-meta"><span class="chat-time">周一</span></div>
+                    </div>
+                    <div class="chat-item" onclick="openChat('finger')">
+                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
+                        <div class="chat-info"><div class="chat-name">芬格尔</div><div class="chat-preview">师弟请吃饭！食堂新出了猪肘子</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期五</span><span class="badge">1</span></div>
+                    </div>
+                    <div class="chat-item" onclick="openChat('chuzihang')">
+                        <div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
+                        <div class="chat-info"><div class="chat-name">楚子航</div><div class="chat-preview">建议录入教材当反面案例</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期六</span></div>
+                    </div>
+                    <div class="chat-item" onclick="openChat('student union')">
+                        <div class="avatar-group">
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg');"></div>
+                        </div>
+                        <div class="chat-info"><div class="chat-name">卡塞尔学生会</div><div class="chat-preview">凯撒：周末集训安排已发</div></div>
+                        <div class="chat-meta"><span class="chat-time">周一</span><span class="badge" style="background:#B0B0B0;">99+</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 通讯录 ===== -->
+            <div class="page" id="page-addressbook">
+                <div class="page-header">通讯录<button class="header-action">➕</button></div>
+                <div class="search-bar"><div class="search-input">🔍 搜索</div></div>
+                <div class="contact-list">
+                    <div class="letter-index" id="letterIndex">
+                        <span data-letter="C">C</span><span data-letter="F">F</span><span data-letter="K">K</span><span data-letter="L">L</span><span data-letter="N">N</span>
+                    </div>
+                    <div class="contact-section" id="sec-C">
+                        <div class="contact-letter">C</div>
+                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div><span class="contact-name">陈墨瞳（诺诺）</span></div>
+                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div><span class="contact-name">楚子航</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-F">
+                        <div class="contact-letter">F</div>
+                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div><span class="contact-name">芬格尔</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-K">
+                        <div class="contact-letter">K</div>
+                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div><span class="contact-name">凯撒·加图索</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-L">
+                        <div class="contact-letter">L</div>
+                        <div class="contact-item"><div class="avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div><span class="contact-name">路明非（自己）</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-N">
+                        <div class="contact-letter">N</div>
+                        <div class="contact-item">
+                            <div class="avatar-group" style="width:40px; height:40px;">
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg');"></div>
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg');"></div>
+                                <div class="mini-avatar" style="background:#FF8C69; font-size:10px;">八</div>
+                            </div>
+                            <span class="contact-name">不聊正事只聊八卦</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 朋友圈 ===== （修复显示不全） -->
+            <div class="page" id="page-moments">
+                <div class="moments-header">
+                    <div class="moments-top-bar">
+                        <span></span>
+                        <span class="title">朋友圈</span>
+                        <span>📷</span>
+                    </div>
+                </div>
+                <div class="moments-scroll-container" id="momentsScroll">
+                    <!-- 封面 — overflow:visible 让头像和名字可溢出 -->
+                    <div class="moments-cover" id="momentsCover">
+                        <div class="moments-cover-bg" id="coverBg"></div>
+                        <!-- 头像 & 名字 放在封面内部，通过 bottom 负值溢出 -->
+                        <div class="moments-profile-avatar" id="profileAvatar">
+                            <img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" />
+                        </div>
+                        <div class="moments-profile-name" id="profileName">路明非</div>
+                    </div>
+                    <!-- 朋友圈列表 -->
+                    <div class="moments-list">
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">诺诺</div>
+                                <div class="moment-text">路明非刚才信誓旦旦地说他学会了煮咖啡，专门给我做了一杯。端上来的时候我觉得颜色不对，问他放了什么。他说"速溶咖啡粉加冷水，然后用微波炉加热了一下"。微波炉。速溶。冷水。我宣布路明非被永久禁止进入任何厨房。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image" src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/coffee.jpg" alt="颜色可疑的咖啡" />
+                                </div>
+                                <div class="moment-time">2小时前</div>
+                                <div class="moment-likes">❤️ 苏茜, 凯撒·加图索, 零, 芬格尔, 楚子航</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：我觉得味道还行啊 我都喝了半杯了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：你居然还喝了半杯 你的胃是铁打的吗<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：芬格尔说我的胃比铁打的还结实 因为铁能生锈我不能<br /><span class="comment-author">芬格尔</span>：我那是夸你 不是让你去喝速溶冷水微波炉咖啡<br /><span class="comment-author">零</span>：速溶咖啡应该用热水冲泡 冷水加微波炉是错误流程<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">零</span>：我找不到热水壶<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：执行部茶水间有 但你不准进 我去给你接<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">零</span>：你对他的仁慈超出我的理解<br /><span class="comment-author">苏茜</span>：会长看了这张照片沉默了五秒 然后说"颜色确实不正常"<br /><span class="comment-author">楚子航</span>：咖啡液正常颜色应为深褐色 这杯呈灰褐色 可能含有未溶解的添加剂 建议倒掉<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：晚了 我已经喝完了 现在胃里有点翻腾<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：去医务室 现在<br /><span class="comment-author">凯撒·加图索</span>：如果你在意大利这么煮咖啡 会被咖啡师驱逐出境 终身禁止入境<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">凯撒·加图索</span>：老大我连意大利都没去过就已经被驱逐了<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">路明非</span>：等你来 我带你喝正宗的 别自己再碰任何咖啡机了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：他不是碰咖啡机 他连咖啡机都没用 他用的是微波炉 这是对咖啡的二次谋杀</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">芬格尔</div>
+                                <div class="moment-text">新发现的宝藏窗口！食堂新出的德国猪肘子绝了 🍖 配上黑啤，简直人生巅峰！</div>
+                                <div class="moment-time">3小时前</div>
+                                <div class="moment-likes">❤️ 路明非, 诺诺, 楚子航 等8人赞过</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：师兄带我一个！<br /><span class="comment-author">芬格尔</span> 回复 <span class="comment-author">路明非</span>：你请客就来 😏</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">诺诺</div>
+                                <div class="moment-text">卡塞尔的星空总是这么亮。有时候觉得，这些星星比外面的世界真实多了 ✨</div>
+                                <div class="moment-time">5小时前</div>
+                                <div class="moment-likes">❤️ 路明非, 凯撒·加图索 等15人赞过</div>
+                                <div class="moment-comments"><span class="comment-author">凯撒</span>：配得上你的只有这片星空<br /><span class="comment-author">路明非</span>：诺诺姐拍得真好！</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">凯撒·加图索</div>
+                                <div class="moment-text">今天的击剑训练，状态不错。下周的校际赛，卡塞尔必胜 ⚔️</div>
+                                <div class="moment-time">8小时前</div>
+                                <div class="moment-likes">❤️ 诺诺, 楚子航, 路明非 等22人赞过</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">路明非</div>
+                                <div class="moment-text">诺诺让我帮她取快递，说是"小件，很轻"。我去了。是一箱画册。二十本。从校门口搬到女生宿舍，穿越半个校园，中间休息了四次。芬格尔路过看到我，说"师弟你在干嘛"，我说"帮诺诺搬快递"，他说"加油"然后走了。走了。他甚至没有减速。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image" src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/books.jpg" alt="摞得老高的纸箱" />
+                                </div>
+                                <div class="moment-time">8小时前</div>
+                                <div class="moment-likes">❤️ 诺诺, 芬格尔, 苏茜, 楚子航, 零, 凯撒·加图索</div>
+                                <div class="moment-comments"><span class="comment-author">诺诺</span>：对我来说确实是小事 搬的人又不是我<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：女侠 你说这话的时候良心不会痛吗<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：不会 画册是给你师姐买的 你师姐就是我 所以你搬是应该的<br /><span class="comment-author">芬格尔</span>：我当时手里端着泡面 不方便帮忙 但我给了你精神支持<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">芬格尔</span>："加油"两个字算哪门子精神支持<br /><span class="comment-author">芬格尔</span> 回复 <span class="comment-author">路明非</span>：我语气很诚恳的 你仔细回忆一下<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">芬格尔</span>：你当时说完就拐弯去食堂了 背影写满了"与我无关"<br /><span class="comment-author">苏茜</span>：二十本画册确实不轻 下次让诺诺自己搬 我帮你监督她<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">苏茜</span>：你是我闺蜜还是他闺蜜<br /><span class="comment-author">苏茜</span> 回复 <span class="comment-author">诺诺</span>：我是公平的副会长 谁欺负人我管谁<br /><span class="comment-author">楚子航</span>：从校门口到女生宿舍约800米 负重估算15公斤 休息四次属于正常体能表现<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：师兄你算这个数据是想安慰我还是打击我<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：客观陈述 下次可以提前叫我<br /><span class="comment-author">零</span>：俄罗斯有句谚语 朋友让你搬东西 说明把你当朋友<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">零</span>：俄罗斯这句谚语是真实存在的吗<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：前半句是真的 后半句我编的<br /><span class="comment-author">凯撒·加图索</span>：你需要一个行李箱 带轮子的那种 我明天让人送一个过去<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">凯撒·加图索</span>：老大你真的不用每次都动用跨国物流<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">路明非</span>：已经下单了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：你不要惯着他 他下次就不帮我搬了<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">诺诺</span>：那就让行李箱自己搬 加图索家的行李箱有自动跟随功能<br /><span class="comment-author">芬格尔</span> 回复 <span class="comment-author">凯撒·加图索</span>：自动跟随？？？那能帮我跟着食堂的菜车吗<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">芬格尔</span>：不能 那个功能是针对主人的 不是针对饥饿的</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">路明非</div>
+                                <div class="moment-text">又是通宵打游戏的一天...明天还要早起训练 😭</div>
+                                <div class="moment-time">昨天</div>
+                                <div class="moment-likes">❤️ 芬格尔, 诺诺 等5人赞过</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 我的 ===== -->
+            <div class="page" id="page-me">
+                <div class="page-header">我</div>
+                <div class="my-page" style="flex:1;overflow-y:auto;">
+                    <div class="my-profile-card">
+                        <div class="my-avatar"><img src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                        <div class="my-info"><div class="my-name">路明非</div><div class="my-wechat-id">微信号：LuMingfei_Sakura</div></div>
+                        <span>›</span>
+                    </div>
+                    <div class="my-menu-section">
+                        <div class="my-menu-item"><span>📸</span><span>相册</span><span>›</span></div>
+                        <div class="my-menu-item"><span>⭐</span><span>收藏</span><span>›</span></div>
+                        <div class="my-menu-item"><span>💰</span><span>钱包</span><span>¥0.00</span><span>›</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 聊天详情 ===== -->
+            <div class="chat-detail-page" id="chatDetailPage">
+                <div class="chat-detail-header">
+                    <button class="chat-detail-back" onclick="closeChat()">←</button>
+                    <span class="chat-detail-title" id="chatDetailTitle">聊天</span>
+                </div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-bar">
+                    <span>😊</span>
+                    <input type="text" class="chat-input" placeholder="输入消息..." id="chatInput" onkeydown="if(event.key==='Enter')sendMessage()" />
+                    <button class="chat-send-btn" onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 底部导航 ===== -->
+        <div class="bottom-nav" id="bottomNav">
+            <div class="nav-item active" data-page="contacts"><span class="nav-icon">💬</span><span class="nav-label">联系人</span><span class="nav-badge">4</span></div>
+            <div class="nav-item" data-page="addressbook"><span class="nav-icon">📇</span><span class="nav-label">通讯录</span></div>
+            <div class="nav-item" data-page="moments"><span class="nav-icon">🟢</span><span class="nav-label">朋友圈</span><span class="nav-badge" style="background:#F43530;min-width:8px;height:8px;top:4px;"></span></div>
+            <div class="nav-item" data-page="me"><span class="nav-icon">👤</span><span class="nav-label">我的</span></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 头像资源 ==========
+        const AVATARS = {
+            lumingfei: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg',
+            nuonuo: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg',
+            kaisa: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg',
+            finger: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg',
+            chuzihang: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg',
+        };
+
+        // ========== 聊天数据 ==========
+        const chatData = {
+            nono: {
+                title: '诺诺',
+                avatarUrl: AVATARS.nuonuo,
+                messages: [
+                    { type: 'system', text: '星期日 19:23' },
+                    { type: 'other', text: '路明非，我明天过生日。' },
+                    { type: 'self', text: '女侠，我知道！我礼物都准备好了，这次绝对不出岔子。' },
+                    { type: 'other', text: '你去年送了我一副防弹眼镜，说是"执行任务的时候用得上"。' },
+                    { type: 'self', text: '实用主义是师兄教我的！' },
+                    { type: 'other', text: '前年你送了我一本《龙族解剖图谱》，扉页还写着"祝你刀枪不入"。' },
+                    { type: 'self', text: '那也是师兄推荐的……' },
+                    { type: 'other', text: '你要是今年再送什么跟战斗有关的东西，我就把你挂在钟楼上让全校参观。' },
+                    { type: 'self', text: '……那个，口红能退吗？我买了一支迷彩色号的。' },
+                    { type: 'other', text: '路明非。' },
+                    { type: 'system', text: '星期三 8:21' },
+                    { type: 'other', text: '路明非，看到我口红了吗？' },
+                    { type: 'self', text: '？？什么口红 没见过 绝对没见过' },
+                    { type: 'other', text: '我还没说是哪支' },
+                    { type: 'self', text: '……' },
+                    { type: 'other', text: '说吧 怎么个死法' },
+                    { type: 'self', text: '那个色号叫什么"斩男色"，我这是替天行道。' },
+                    { type: 'other', text: '行，那你替它偿命吧。' },
+                    { type: 'self', text: '等等！我买十根赔你！刷我的卡——哦对，我没钱，先刷师兄的卡！' },
+                    { type: 'other', text: '……' },
+                    { type: 'other', text: '楚子航摊上你真是这辈子有了' },
+                    { type: 'system', text: '星期四 12:44' },
+                    { type: 'self', text: '女侠 问你个事' },
+                    { type: 'other', text: '说' },
+                    { type: 'self', text: '如果你不小心把一个人的东西弄坏了 但那个人很凶 你选择自首还是毁尸灭迹' },
+                    { type: 'other', text: '你把谁的东西弄坏了' },
+                    { type: 'self', text: '先别管是谁 你就回答我' },
+                    { type: 'other', text: '你是不是弄坏了凯撒的东西' },
+                    { type: 'self', text: '不是凯撒 比凯撒更恐怖' },
+                    { type: 'other', text: '那只能是楚子航了' },
+                    { type: 'self', text: '我把村雨的刀穗扯断了 就那个紫色的绳子 我不是故意的 我就是想摸摸' },
+                    { type: 'other', text: '路明非 你摸了楚子航的刀 还扯断了刀穗' },
+                    { type: 'self', text: '别重复一遍 我已经很慌了' },
+                    { type: 'other', text: '你知道那个刀穗是谁编的吗' },
+                    { type: 'self', text: '不知道 我就觉得挺好看' },
+                    { type: 'other', text: '苏茜编的 编了一周 送给他的时候说是"保平安的"' },
+                    { type: 'self', text: '那我不光得罪师兄 还得罪苏茜师姐了？？？' },
+                    { type: 'other', text: '你完了 准备遗言吧' },
+                    { type: 'self', text: '你就不能安慰我一下吗' },
+                    { type: 'other', text: '不能 我正在截图 这条对话太精彩了' },
+                    { type: 'self', text: '等等你别发朋友圈' },
+                    { type: 'other', text: '晚了 苏茜已读' },
+                    { type: 'self', text: '……' }
+                ],
+            },
+            kaisa: {
+                title: '凯撒',
+                avatarUrl: AVATARS.kaisa,
+                messages: [
+                    { type: 'system', text: '星期一 19:00' },
+                    { type: 'other', text: '路明非，明天训练别迟到' },
+                    { type: 'self', text: '知道了，凯撒老大' },
+                    { type: 'other', text: '上次你表现不错，继续保持' },
+                    { type: 'system', text: '周一 15:45' },
+                    { type: 'other', text: '路明非，诺诺说上周你送她一支口红，色号是"午夜巴黎"' },
+                    { type: 'self', text: '老大那是赔罪！之前我把她的踩碎了，师兄垫的钱' },
+                    { type: 'self', text: '天地良心，我连那颜色长什么样都没敢看' },
+                    { type: 'other', text: '慌什么，我只是想说品味不错' },
+                    { type: 'self', text: '师兄挑的，他说根据光谱分析那个波长最接近血红色，比较实用' },
+                    { type: 'other', text: '……送口红讲究光谱分析，楚子航是人类吗？' },
+                    { type: 'self', text: '难说，我也经常问自己这个问题' }
+                ],
+            },
+            finger: {
+                title: '芬格尔',
+                avatarUrl: AVATARS.finger,
+                messages: [
+                    { type: 'system', text: '星期五 18:30' },
+                    { type: 'other', text: '师弟！食堂新出了猪肘子！' },
+                    { type: 'self', text: '真的假的？好吃吗' },
+                    { type: 'other', text: '绝了！我吃了三个，现在还撑着呢' },
+                    { type: 'other', text: '师弟请吃饭！明天一起去 🍖' },
+                ],
+            },
+            chuzihang: {
+                title: '楚子航',
+                avatarUrl: AVATARS.chuzihang,
+                messages: [
+                    { type: 'system', text: '星期三 01:06' },
+                    { type: 'self', text: '师兄，饿了，夜宵吃什么？' },
+                    { type: 'other', text: '夜宵应在22点前吃，现在凌晨1点属早餐范畴，建议煎蛋和牛奶。' },
+                    { type: 'self', text: '……我就问问有什么吃的，没让你科普。' },
+                    { type: 'other', text: '食堂剩余食材：半根法棍，可充当武器。' },
+                    { type: 'self', text: '那我还是饿着吧。' },
+                    { type: 'system', text: '星期六 21:53' },
+                    { type: 'self', text: '师兄，凯撒老大今天在餐厅当着所有人的面夸我，说我"逃跑姿势极具个人风格"，他是夸我还是损我？' },
+                    { type: 'other', text: '凯撒的评价属于客观描述，你的逃跑路线确实无法被预判。' },
+                    { type: 'self', text: '那叫灵活走位！灵活走位懂不懂！' },
+                    { type: 'other', text: '上回你逃跑时撞翻了校长的咖啡，那也属于灵活走位的一部分？' },
+                    { type: 'self', text: '……那是个意外。校长后来没说什么吧？' },
+                    { type: 'other', text: '他说你的路径规划能力超越了执行部平均水平，建议录入教材当反面案例。' }
+                ],
+            },
+            group: {
+                title: '不聊正事只聊八卦',
+                isGroup: true,
+                members: {
+                    '芬格尔': AVATARS.finger,
+                    '诺诺': AVATARS.nuonuo,
+                },
+                messages: [
+                    { type: 'system', text: '星期二 21:28' },
+                    { type: 'other', text: '芬格尔：你们听说了吗？学院后山好像有情况', sender: '芬格尔' },
+                    { type: 'other', text: '诺诺：什么情况？别卖关子', sender: '诺诺' },
+                    { type: 'self', text: '师兄你又从哪听到的小道消息' },
+                ],
+            },
+            'student union': {
+                title: '卡塞尔学生会',
+                isGroup: true,
+                members: {
+                    '凯撒': AVATARS.kaisa,
+                    '诺诺': AVATARS.nuonuo,
+                    '楚子航': AVATARS.chuzihang,
+                },
+                messages: [
+                    { type: 'system', text: '星期一 10:00' },
+                    { type: 'other', text: '凯撒：周末集训安排已发，注意查收', sender: '凯撒' },
+                    { type: 'other', text: '诺诺：收到，已转发各组', sender: '诺诺' },
+                    { type: 'self', text: '收到！' },
+                ],
+            },
+        };
+
+        // ========== 页面切换 ==========
+        const pages = {
+            contacts: document.getElementById('page-contacts'),
+            addressbook: document.getElementById('page-addressbook'),
+            moments: document.getElementById('page-moments'),
+            me: document.getElementById('page-me'),
+        };
+        const navItems = document.querySelectorAll('.nav-item');
+        const chatDetailPage = document.getElementById('chatDetailPage');
+        const chatDetailTitle = document.getElementById('chatDetailTitle');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        let currentChat = null;
+
+        function switchPage(pageName) {
+            if (chatDetailPage.classList.contains('active')) closeChat(false);
+            Object.values(pages).forEach(p => p.classList.remove('active'));
+            if (pages[pageName]) pages[pageName].classList.add('active');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageName) item.classList.add('active');
+            });
+            if (pages[pageName]) pages[pageName].scrollTop = 0;
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => switchPage(item.dataset.page));
+        });
+
+        // ========== 聊天功能 ==========
+        function openChat(chatKey) {
+            const data = chatData[chatKey];
+            if (!data) return;
+            currentChat = chatKey;
+            chatDetailTitle.textContent = data.title;
+            renderMessages(data);
+            chatDetailPage.classList.add('active');
+            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
+            chatInput.focus();
+        }
+
+        function closeChat(clearInput = true) {
+            chatDetailPage.classList.remove('active');
+            currentChat = null;
+            if (clearInput) chatInput.value = '';
+        }
+
+        function renderMessages(data) {
+            chatMessages.innerHTML = '';
+            data.messages.forEach(msg => {
+                if (msg.type === 'system') {
+                    const div = document.createElement('div');
+                    div.className = 'msg-system';
+                    div.textContent = msg.text;
+                    chatMessages.appendChild(div);
+                } else if (msg.type === 'self') {
+                    const row = document.createElement('div');
+                    row.className = 'msg-row self';
+                    row.innerHTML =
+                        `<div class="msg-avatar"><img src="${AVATARS.lumingfei}" alt="我"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
+                    chatMessages.appendChild(row);
+                } else if (msg.type === 'other') {
+                    let avatarUrl = data.avatarUrl || '';
+                    if (data.isGroup && msg.sender && data.members && data.members[msg.sender]) {
+                        avatarUrl = data.members[msg.sender];
+                    }
+                    const row = document.createElement('div');
+                    row.className = 'msg-row other';
+                    const senderName = (data.isGroup && msg.sender) ?
+                        `<span style="font-size:11px;color:#576B95;font-weight:500;display:block;margin-bottom:2px;">${escapeHtml(msg.sender)}</span>` :
+                        '';
+                    if (avatarUrl) {
+                        row.innerHTML =
+                            `<div class="msg-avatar"><img src="${avatarUrl}" alt=""></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                    } else {
+                        row.innerHTML =
+                            `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                    }
+                    chatMessages.appendChild(row);
+                }
+            });
+            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 30);
+        }
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text || !currentChat) return;
+            const data = chatData[currentChat];
+            if (!data) return;
+            data.messages.push({ type: 'self', text: text });
+            chatInput.value = '';
+            renderMessages(data);
+            if (currentChat === 'finger' && Math.random() > 0.4) {
+                setTimeout(() => {
+                    const replies = ['好说好说，记得带钱包 😎', '师弟你最好了！', '那明天见！'];
+                    data.messages.push({ type: 'other', text: replies[Math.floor(Math.random() * replies.length)] });
+                    renderMessages(data);
+                }, 800 + Math.random() * 1500);
+            }
+            if (currentChat === 'nono' && Math.random() > 0.5) {
+                setTimeout(() => {
+                    const replies = ['你自己看着办', '截图已发群聊', '楚子航正在找你'];
+                    data.messages.push({ type: 'other', text: replies[Math.floor(Math.random() * replies.length)] });
+                    renderMessages(data);
+                }, 600 + Math.random() * 1200);
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        document.getElementById('letterIndex').addEventListener('click', function(e) {
+            const span = e.target.closest('span');
+            if (!span || !span.dataset.letter) return;
+            const section = document.getElementById('sec-' + span.dataset.letter);
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && chatDetailPage.classList.contains('active')) closeChat();
+        });
+
+        // ============================================================
+        //  🔥 朋友圈视差效果：滚动时封面、头像、名字逐渐消失
+        // ============================================================
+        (function initMomentsParallax() {
+            const scrollContainer = document.getElementById('momentsScroll');
+            const cover = document.getElementById('momentsCover');
+            const coverBg = document.getElementById('coverBg');
+            const avatar = document.getElementById('profileAvatar');
+            const nameEl = document.getElementById('profileName');
+
+            if (!scrollContainer || !cover) return;
+
+            const COVER_HEIGHT = 220;
+
+            scrollContainer.addEventListener('scroll', function() {
+                const scrollTop = this.scrollTop;
+                const progress = Math.min(scrollTop / COVER_HEIGHT, 1);
+
+                // 1. 封面高度从 220 → 0
+                const newHeight = Math.max(0, COVER_HEIGHT - scrollTop);
+                cover.style.height = newHeight + 'px';
+
+                // 2. 整体透明度 1 → 0
+                const opacity = 1 - progress;
+                cover.style.opacity = opacity;
+
+                // 3. 背景层透明度同步（封面透明度已影响子元素，但单独控制更保险）
+                if (coverBg) coverBg.style.opacity = opacity;
+
+                // 4. 头像和名字透明度同步
+                if (avatar) avatar.style.opacity = opacity;
+                if (nameEl) nameEl.style.opacity = opacity;
+
+                if (progress >= 1) {
+                    cover.classList.add('cover-hidden');
+                } else {
+                    cover.classList.remove('cover-hidden');
+                }
+            }, { passive: true });
+
+            // 初始状态确保显示
+            cover.style.height = COVER_HEIGHT + 'px';
+            cover.style.opacity = '1';
+            if (coverBg) coverBg.style.opacity = '1';
+            if (avatar) avatar.style.opacity = '1';
+            if (nameEl) nameEl.style.opacity = '1';
+        })();
+    </script>
 </body>
 </html>
