@@ -780,6 +780,10 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -1063,6 +1067,71 @@
     </div>
 
     <script>
+        // ========== DeepSeek API配置 ==========
+        const DEEPSEEK_API_KEY = 'sk-3524350e952e4529841aef909fb2e01b';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        const DEEPSEEK_MODEL = 'deepseek-chat';
+
+        // ========== 角色性格提示词 ==========
+        const CHARACTER_PROMPTS = {
+            nono: '玩家扮演路明非。你是陈墨瞳，大家都叫你诺诺。你是卡塞尔学院A级学生，性格火辣、聪明机智、有点毒舌但内心善良。你是路明非的师姐，经常调侃他但也会关心他。说话风格直接幽默，喜欢用轻松的语气调侃路明非。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            kaisa: '玩家扮演路明非。你是凯撒·加图索，加图索家族的继承人。你自信、霸气、优雅，说话带着贵族的从容。你喜欢送昂贵的礼物，经常用金钱解决问题。你称呼玩家为"路明非"或直接叫名字，对他既严格又关心。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            finger: '玩家扮演路明非。你是芬格尔·冯·弗林斯，卡塞尔学院新闻部部长。你是个学渣但很有幽默感，喜欢吃泡面和猪肘子。你经常坑路明非但也是他最好的朋友。说话风格夸张搞笑，喜欢用网络用语和表情包风格的语言，称呼玩家为"师弟"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            chuzihang: '玩家扮演路明非。你是楚子航，狮心会会长。你冷静、理性、话少，做事一丝不苟。你说话总是简洁明了，喜欢用数据和事实说话。你是路明非的师兄，称呼玩家为"路明非"或"师弟"，表面冷漠但内心关心他。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            xiami: '玩家扮演路明非。你是夏弥，卡塞尔学院A级学生。你活泼可爱、古灵精怪，喜欢捉弄楚子航。你说话俏皮，喜欢用轻松的语气调侃别人，称呼玩家为"路明非"或直接叫名字。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            ling: '玩家扮演路明非。你是零，卡塞尔学院学生。你是俄罗斯人，说话简洁冷静，但对路明非很关心。你喜欢用数据和客观分析说话，偶尔会说出让人意外的温柔话，称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            huiliyi: '玩家扮演路明非。你是上杉绘梨衣，源氏重工的小公主。你天真纯洁、可爱善良，说话简短温柔，喜欢称呼玩家为"Sakura"。你对世界充满好奇，容易满足，会用简单的语言表达自己的感受。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            group: '玩家扮演路明非。你是微信群"某天路明非没回消息"的聊天场景，包含诺诺、芬格尔、夏弥、苏茜、零、凯撒、楚子航。你需要扮演群聊中的多个角色，根据对话内容自然切换发言者，所有角色都称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            'student union': '玩家扮演路明非。你是微信群"狮心会学生会非正式会谈"的聊天场景，包含凯撒、楚子航、诺诺、路明非、零、苏茜、芬格尔、夏弥。你需要扮演群聊中的多个角色，根据对话内容自然切换发言者，所有角色都称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+        };
+
+        // ========== 聊天记录持久化（已禁用，刷新后记录消失） ==========
+        function loadChatHistory() {
+            localStorage.removeItem('dragon_raja_chat_history');
+        }
+        function saveChatHistory() {}
+
+        // ========== DeepSeek API调用 ==========
+        async function callDeepSeek(chatKey, messageHistory) {
+            const systemPrompt = CHARACTER_PROMPTS[chatKey] || '你是一个聊天伙伴';
+            const isGroup = chatData[chatKey]?.isGroup || false;
+
+            const messages = [
+                { role: 'system', content: systemPrompt }
+            ];
+
+            const selfMessages = messageHistory.filter(m => m.type === 'self');
+            if (selfMessages.length > 0) {
+                messages.push({ role: 'user', content: selfMessages[selfMessages.length - 1].text });
+            }
+
+            try {
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: DEEPSEEK_MODEL,
+                        messages: messages,
+                        temperature: 0.8,
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0]?.message?.content || '';
+            } catch (e) {
+                console.error('DeepSeek API调用失败:', e);
+                return '';
+            }
+        }
+
         // ========== 头像资源 ==========
         const AVATARS = {
             lumingfei: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg',
@@ -1073,6 +1142,7 @@
             xiami: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg',
             ling: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/zero.jpg',
             suqian: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/suqian.jpg',
+            huiliyi: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/711fa4a7f33550ee8355b2a181b8d76d3912b63b/b16be5091e3406a939b248065680fb4e.jpg',
         };
 
         // ========== 聊天数据 ==========
@@ -1298,6 +1368,29 @@
                     { type: 'self', text: '你又来了' },
                 ],
             },
+            huiliyi: {
+                title: '绘梨衣',
+                avatarUrl: AVATARS.huiliyi,
+                messages: [
+                    { type: 'system', text: '星期日 14:03' },
+                    { type: 'other', text: '我是绘梨衣' },
+                    { type: 'other', text: 'Sakura 今天东京下雨了' },
+                    { type: 'self', text: '绘梨衣？你学会发微信了？？？' },
+                    { type: 'other', text: '哥哥教的 他说按这个按钮可以跟Sakura说话' },
+                    { type: 'self', text: '你哥哥是源稚生还是源稚女' },
+                    { type: 'other', text: '是哥哥' },
+                    { type: 'self', text: '这跟没回答一样 不过没关系 你说东京下雨了 卡塞尔也下雨了 我们在同一片雨下面' },
+                    { type: 'other', text: '同一片雨 开心' },
+                    { type: 'system', text: '星期一 9:34' },
+                    { type: 'self', text: '绘梨衣 你今天吃了什么' },
+                    { type: 'other', text: '拉面 哥哥煮的 太咸了' },
+                    { type: 'self', text: '师兄煮面也咸 他分不清盐和糖 你是不是觉得全世界的哥哥做饭都一个味' },
+                    { type: 'other', text: 'Sakura做饭咸吗' },
+                    { type: 'self', text: '我不咸 我只会泡面 泡面的咸度是工厂定的 不关我事' },
+                    { type: 'other', text: '想吃Sakura泡的面' },
+                    { type: 'self', text: '泡面有什么好吃的 等我去东京 带你去吃拉面 不是哥哥煮的那种 是店里那种 豚骨汤底 加溏心蛋' },
+                ],
+            },
             group: {
                 title: '某天路明非没回消息（7人）',
                 isGroup: true,
@@ -1311,6 +1404,7 @@
                     '楚子航': AVATARS.chuzihang,
                 },
                 messages: [
+                    { type: 'system', text: '星期二 20:10' },
                     { type: 'other', text: '路明非失联了 三个小时没回微信', sender: '诺诺' },
                     { type: 'other', text: '正常 他上次掉进图书馆地下室的档案堆里 也是三个小时后才爬出来', sender: '芬格尔' },
                     { type: 'other', text: '我在训练场 没看到他', sender: '夏弥' },
@@ -1498,27 +1592,65 @@
             }, 30);
         }
 
-        function sendMessage() {
+        function getCurrentTimeString() {
+            const now = new Date();
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const weekday = weekdays[now.getDay()];
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${weekday} ${hours}:${minutes}`;
+        }
+
+        async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text || !currentChat) return;
             const data = chatData[currentChat];
             if (!data) return;
+            
+            const currentTime = getCurrentTimeString();
+            const lastSystemMsg = [...data.messages].reverse().find(m => m.type === 'system');
+            if (!lastSystemMsg || lastSystemMsg.text !== currentTime) {
+                data.messages.push({ type: 'system', text: currentTime });
+            }
+            
             data.messages.push({ type: 'self', text: text });
             chatInput.value = '';
             renderMessages(data);
-            if (currentChat === 'finger' && Math.random() > 0.4) {
-                setTimeout(() => {
-                    const replies = ['好说好说，记得带钱包 😎', '师弟你最好了！', '那明天见！'];
-                    data.messages.push({ type: 'other', text: replies[Math.floor(Math.random() * replies.length)] });
-                    renderMessages(data);
-                }, 800 + Math.random() * 1500);
+            saveChatHistory();
+
+            const loadingRow = document.createElement('div');
+            loadingRow.className = 'msg-row other';
+            loadingRow.id = 'loadingMsg';
+            let avatarUrl = data.avatarUrl || '';
+            if (data.isGroup) {
+                avatarUrl = Object.values(data.members)[0];
             }
-            if (currentChat === 'nono' && Math.random() > 0.5) {
-                setTimeout(() => {
-                    const replies = ['你自己看着办', '截图已发群聊', '楚子航正在找你'];
-                    data.messages.push({ type: 'other', text: replies[Math.floor(Math.random() * replies.length)] });
-                    renderMessages(data);
-                }, 600 + Math.random() * 1200);
+            loadingRow.innerHTML =
+                `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble"><span style="display:inline-block;width:16px;height:16px;border:2px solid #CCC;border-top-color:#888;border-radius:50%;animation:spin 0.8s linear infinite;"></span></div>`;
+            chatMessages.appendChild(loadingRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const reply = await callDeepSeek(currentChat, data.messages);
+            
+            const loadingEl = document.getElementById('loadingMsg');
+            if (loadingEl) loadingEl.remove();
+
+            if (reply) {
+                if (data.isGroup) {
+                    const lines = reply.split('\n').filter(line => line.trim());
+                    lines.forEach(line => {
+                        const match = line.match(/^\[(.*?)\]:\s*(.*)/);
+                        if (match && data.members && data.members[match[1]]) {
+                            data.messages.push({ type: 'other', text: match[2], sender: match[1] });
+                        } else {
+                            data.messages.push({ type: 'other', text: line, sender: Object.keys(data.members)[0] });
+                        }
+                    });
+                } else {
+                    data.messages.push({ type: 'other', text: reply });
+                }
+                renderMessages(data);
+                saveChatHistory();
             }
         }
 
@@ -1710,6 +1842,7 @@
                 setupLazyLoading();
                 setupAvatarLoading();
                 setupMomentImageLoading();
+                loadChatHistory();
             });
 
             if (document.readyState === 'interactive') {
@@ -1717,6 +1850,7 @@
                 setupLazyLoading();
                 setupAvatarLoading();
                 setupMomentImageLoading();
+                loadChatHistory();
             }
         })();
     </script>
