@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>路明非的微信</title>
+    <style>
+        :root {
+            --wechat-green: #07C160;
+            --wechat-dark: #1A1A1A;
+            --wechat-bg: #EDEDED;
+            --wechat-white: #FFFFFF;
+            --bubble-green: #95EC69;
+            --text-primary: #1A1A1A;
+            --text-secondary: #888888;
+            --divider: #E5E5E5;
+            --red-dot: #F43530;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 430px;
+            height: 92vh;
+            max-height: 900px;
+            background: #000;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 3px #1a1a1a, 0 0 0 6px #2a2a2a, 0 0 0 8px #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .status-bar {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .status-bar .time {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 11px;
+        }
+        .status-icons .battery {
+            width: 22px;
+            height: 10px;
+            border: 1.5px solid #fff;
+            border-radius: 2px;
+            padding: 1.5px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .status-icons .battery::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.5px;
+            height: 4px;
+            background: #fff;
+            border-radius: 0 1px 1px 0;
+        }
+        .status-icons .battery-fill {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 1px;
+        }
+
+        .main-content {
+            flex: 1;
+            background: #EDEDED;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            background: #EDEDED;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        .chat-detail-page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            background: #EDEDED;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+        .chat-detail-page.active {
+            display: flex;
+        }
+
+        .page-header {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+        }
+        .page-header .back-btn {
+            position: absolute;
+            left: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #FFF;
+            background: none;
+            border: none;
+        }
+        .page-header .header-action {
+            position: absolute;
+            right: 16px;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.8;
+            background: none;
+            border: none;
+            color: #FFF;
+            padding: 4px;
+        }
+
+        .search-bar {
+            padding: 8px 14px;
+            flex-shrink: 0;
+            background: #EDEDED;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            background: #FFF;
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #F0F0F0;
+            gap: 12px;
+            position: relative;
+        }
+        .chat-item:active {
+            background: #E8E8E8;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #DDD;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .avatar-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #DDD;
+        }
+        .mini-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-color: #CCC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 11px;
+            color: #FFF;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .chat-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1A1A1A;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-preview {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .chat-time {
+            font-size: 11px;
+            color: #B0B0B0;
+        }
+        .badge {
+            background: #F43530;
+            color: #FFF;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+            position: relative;
+        }
+        .contact-section {
+            padding: 0;
+        }
+        .contact-letter {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            background: #EDEDED;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+        }
+        .contact-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+        .contact-name {
+            font-size: 15px;
+            color: #1A1A1A;
+        }
+        .letter-index {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+            z-index: 3;
+            padding: 4px 2px;
+            line-height: 1.6;
+        }
+        .letter-index span {
+            padding: 1px 3px;
+            cursor: pointer;
+            border-radius: 2px;
+            text-align: center;
+        }
+        .letter-index span:hover {
+            color: #07C160;
+            background: rgba(7, 193, 96, 0.08);
+        }
+
+        /* ===== 朋友圈 - 修复显示不全 ===== */
+        .moments-header {
+            background: #1A1A1A;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .moments-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            color: #FFF;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .moments-top-bar .title {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* 滚动容器 */
+        .moments-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            background: #FFF;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 封面 — 关键修复：overflow 改为 visible，让头像和名字可以溢出显示 */
+        .moments-cover {
+            height: 220px;
+            position: relative;
+            overflow: visible;          /* 修复：允许头像和名字溢出显示 */
+            flex-shrink: 0;
+            will-change: height, opacity;
+        }
+
+        /* 背景层 — 高度跟随父容器，避免溢出 */
+        .moments-cover-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/chenlu.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            will-change: opacity;
+        }
+
+        /* 头像 — 部分在封面内，部分在封面外 */
+        .moments-profile-avatar {
+            position: absolute;
+            bottom: -24px;             /* 向下溢出24px */
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            border: 3px solid #FFF;
+            overflow: hidden;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            will-change: opacity;
+            transition: opacity 0.05s;
+        }
+        .moments-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 名字 — 完全在封面外部 */
+        .moments-profile-name {
+            position: absolute;
+            bottom: -30px;             /* 向下溢出30px */
+            right: 92px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+            z-index: 2;
+            will-change: opacity;
+            transition: opacity 0.05s;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        /* 朋友圈列表 */
+        .moments-list {
+            background: #FFF;
+            padding-top: 36px;          /* 给头像和名字留出空间，避免重叠 */
+        }
+        .moment-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            gap: 10px;
+        }
+        .moment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .moment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .moment-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .moment-author {
+            font-size: 14px;
+            font-weight: 600;
+            color: #576B95;
+            margin-bottom: 4px;
+        }
+        .moment-text {
+            font-size: 14px;
+            color: #1A1A1A;
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+        .moment-time {
+            font-size: 11px;
+            color: #B0B0B0;
+            margin-bottom: 4px;
+        }
+        .moment-likes {
+            background: #F7F7F7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #576B95;
+            margin-top: 4px;
+        }
+        .moment-comments {
+            background: #F7F7F7;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #333;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+        .comment-author {
+            color: #576B95;
+            font-weight: 500;
+        }
+        .moment-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 6px;
+            max-width: 100%;
+        }
+        .moment-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .img-wrapper {
+            position: relative;
+            background: #F5F5F5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .img-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F5F5F5;
+            color: #CCC;
+            font-size: 24px;
+            z-index: 1;
+        }
+        .img-wrapper img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .img-wrapper img.loaded {
+            opacity: 1;
+        }
+        .img-wrapper img.error {
+            opacity: 0;
+        }
+
+        .avatar {
+            background: #DDD;
+        }
+        .avatar img {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .avatar img.loaded {
+            opacity: 1;
+        }
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .my-page {
+            background: #EDEDED;
+        }
+        .my-profile-card {
+            background: #FFF;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 8px solid #EDEDED;
+            cursor: pointer;
+        }
+        .my-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .my-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .my-info {
+            flex: 1;
+        }
+        .my-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+        .my-wechat-id {
+            font-size: 13px;
+            color: #888;
+        }
+        .my-menu-section {
+            background: #FFF;
+            margin-bottom: 8px;
+        }
+        .my-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            display: flex;
+            background: #F7F7F7;
+            border-top: 1px solid #E0E0E0;
+            padding: 6px 0;
+            flex-shrink: 0;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            color: #888;
+            font-size: 10px;
+            position: relative;
+        }
+        .nav-item.active {
+            color: #07C160;
+        }
+        .nav-icon {
+            font-size: 22px;
+        }
+        .nav-badge {
+            position: absolute;
+            top: 0;
+            right: 50%;
+            transform: translateX(22px);
+            background: #F43530;
+            color: #FFF;
+            font-size: 10px;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .chat-detail-header {
+            background: #1A1A1A;
+            color: #FFF;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .chat-detail-back {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #FFF;
+        }
+        .chat-detail-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #EDEDED;
+        }
+        .msg-row {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+            align-items: flex-start;
+        }
+        .msg-row.self {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-row.other {
+            align-self: flex-start;
+        }
+        .msg-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .msg-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .msg-bubble {
+            padding: 10px 13px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .msg-row.self .msg-bubble {
+            background: #95EC69;
+            color: #1A1A1A;
+        }
+        .msg-row.other .msg-bubble {
+            background: #FFF;
+            color: #1A1A1A;
+        }
+        .msg-system {
+            text-align: center;
+            font-size: 11px;
+            color: #B0B0B0;
+            padding: 4px 0;
+        }
+        .chat-input-bar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #F7F7F7;
+            border-top: 1px solid #E0E0E0;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: 1px solid #E0E0E0;
+            font-size: 14px;
+            outline: none;
+            background: #FFF;
+        }
+        .chat-send-btn {
+            padding: 8px 16px;
+            background: #07C160;
+            color: #FFF;
+            border: none;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">21:36</span>
+            <div class="status-icons">
+                <span>5G</span> <span>📶</span>
+                <div class="battery"><div class="battery-fill" style="width:75%;"></div></div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <!-- ===== 联系人 ===== -->
+            <div class="page active" id="page-contacts">
+                <div class="page-header">微信<button class="header-action">🔍</button></div>
+                <div class="search-bar"><div class="search-input">🔍 搜索</div></div>
+                <div class="chat-list">
+                    <div class="chat-item" data-key="group" onclick="openChat('group')">
+                        <div class="avatar-group">
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg');"></div>
+                            <div class="mini-avatar" style="background:#FF8C69; font-size:12px;">7</div>
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-name">某天路明非没回消息（7人）</div>
+                            <div class="chat-preview">诺诺：路明非失联了...</div>
+                        </div>
+                        <div class="chat-meta"><span class="chat-time">星期二</span><span class="badge">3</span></div>
+                    </div>
+                    <div class="chat-item" data-key="nono" onclick="openChat('nono')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                        <div class="chat-info"><div class="chat-name">诺诺</div><div class="chat-preview">晚了 苏茜已读</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期四</span></div>
+                    </div>
+                    <div class="chat-item" data-key="kaisa" onclick="openChat('kaisa')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                        <div class="chat-info"><div class="chat-name">凯撒</div><div class="chat-preview">已经发货了 二十箱</div></div>
+                        <div class="chat-meta"><span class="chat-time">周一</span></div>
+                    </div>
+                    <div class="chat-item" data-key="finger" onclick="openChat('finger')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div>
+                        <div class="chat-info"><div class="chat-name">芬格尔</div><div class="chat-preview">你无敌了</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期五</span><span class="badge">1</span></div>
+                    </div>
+                    <div class="chat-item" data-key="chuzihang" onclick="openChat('chuzihang')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
+                        <div class="chat-info"><div class="chat-name">楚子航</div><div class="chat-preview">一本写着后果自负的书你拿来教我</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期六</span></div>
+                    </div>
+                    <div class="chat-item" data-key="xiami" onclick="openChat('xiami')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg" alt="夏弥" /></div>
+                        <div class="chat-info"><div class="chat-name">夏弥</div><div class="chat-preview">你连他领带颜色都记</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期六</span></div>
+                    </div>
+                    <div class="chat-item" data-key="ling" onclick="openChat('ling')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/zero.jpg" alt="零" /></div>
+                        <div class="chat-info"><div class="chat-name">零</div><div class="chat-preview">你又来了</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期六</span></div>
+                    </div>
+                    <div class="chat-item" data-key="huiliyi" onclick="openChat('huiliyi')">
+                        <div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/711fa4a7f33550ee8355b2a181b8d76d3912b63b/b16be5091e3406a939b248065680fb4e.jpg" alt="绘梨衣" /></div>
+                        <div class="chat-info"><div class="chat-name">绘梨衣</div><div class="chat-preview">想吃Sakura泡的面</div></div>
+                        <div class="chat-meta"><span class="chat-time">星期一</span></div>
+                    </div>
+                    <div class="chat-item" data-key="student union" onclick="openChat('student union')">
+                        <div class="avatar-group">
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                            <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg');"></div>
+                        </div>
+                        <div class="chat-info"><div class="chat-name">狮心会学生会非正式会谈（7）</div><div class="chat-preview">芬格尔：标题已经写好了：《S级湿身记》 图片位留空 等你摔倒就填上</div></div>
+                        <div class="chat-meta"><span class="chat-time">周一</span><span class="badge" style="background:#B0B0B0;">99+</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 通讯录 ===== -->
+            <div class="page" id="page-addressbook">
+                <div class="page-header">通讯录<button class="header-action">➕</button></div>
+                <div class="search-bar"><div class="search-input">🔍 搜索</div></div>
+                <div class="contact-list">
+                    <div class="letter-index" id="letterIndex">
+                        <span data-letter="C">C</span><span data-letter="F">F</span><span data-letter="K">K</span><span data-letter="L">L</span><span data-letter="N">N</span><span data-letter="X">X</span>
+                    </div>
+                    <div class="contact-section" id="sec-C">
+                        <div class="contact-letter">C</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div><span class="contact-name">陈墨瞳（诺诺）</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div><span class="contact-name">楚子航</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-F">
+                        <div class="contact-letter">F</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg" alt="芬格尔" /></div><span class="contact-name">芬格尔</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-K">
+                        <div class="contact-letter">K</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div><span class="contact-name">凯撒·加图索</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-L">
+                        <div class="contact-letter">L</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/zero.jpg" alt="零" /></div><span class="contact-name">零</span></div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div><span class="contact-name">路明非（自己）</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-N">
+                        <div class="contact-letter">N</div>
+                        <div class="contact-item">
+                            <div class="avatar-group" style="width:40px; height:40px;">
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg');"></div>
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg');"></div>
+                                <div class="mini-avatar" style="background-image:url('https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg');"></div>
+                                <div class="mini-avatar" style="background:#FF8C69; font-size:10px;">7</div>
+                            </div>
+                            <span class="contact-name">某天路明非没回消息（7人）</span>
+                        </div>
+                    </div>
+                    <div class="contact-section" id="sec-S">
+                        <div class="contact-letter">S</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/711fa4a7f33550ee8355b20c0bd2916d08eeaa3aa55f4c75592cd4/b16be5091e3406a939b248065680fb4e.jpg" alt="绘梨衣" /></div><span class="contact-name">上杉绘梨衣</span></div>
+                    </div>
+                    <div class="contact-section" id="sec-X">
+                        <div class="contact-letter">X</div>
+                        <div class="contact-item"><div class="avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg" alt="夏弥" /></div><span class="contact-name">夏弥</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 朋友圈 ===== （修复显示不全） -->
+            <div class="page" id="page-moments">
+                <div class="moments-header">
+                    <div class="moments-top-bar">
+                        <span></span>
+                        <span class="title">朋友圈</span>
+                        <span>📷</span>
+                    </div>
+                </div>
+                <div class="moments-scroll-container" id="momentsScroll">
+                    <!-- 封面 — overflow:visible 让头像和名字可溢出 -->
+                    <div class="moments-cover" id="momentsCover">
+                        <div class="moments-cover-bg" id="coverBg"></div>
+                        <!-- 头像 & 名字 放在封面内部，通过 bottom 负值溢出 -->
+                        <div class="moments-profile-avatar" id="profileAvatar">
+                            <img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" />
+                        </div>
+                        <div class="moments-profile-name" id="profileName">路明非</div>
+                    </div>
+                    <!-- 朋友圈列表 -->
+                    <div class="moments-list">
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">诺诺</div>
+                                <div class="moment-text">路明非刚才信誓旦旦地说他学会了煮咖啡，专门给我做了一杯。端上来的时候我觉得颜色不对，问他放了什么。他说"速溶咖啡粉加冷水，然后用微波炉加热了一下"。微波炉。速溶。冷水。我宣布路明非被永久禁止进入任何厨房。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/coffee.jpg" alt="颜色可疑的咖啡" />
+                                </div>
+                                <div class="moment-time">2小时前</div>
+                                <div class="moment-likes">❤️ 苏茜, 凯撒·加图索, 零, 芬格尔, 楚子航</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：我觉得味道还行啊 我都喝了半杯了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：你居然还喝了半杯 你的胃是铁打的吗<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：芬格尔说我的胃比铁打的还结实 因为铁能生锈我不能<br /><span class="comment-author">芬格尔</span>：我那是夸你 不是让你去喝速溶冷水微波炉咖啡<br /><span class="comment-author">零</span>：速溶咖啡应该用热水冲泡 冷水加微波炉是错误流程<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">零</span>：我找不到热水壶<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：执行部茶水间有 但你不准进 我去给你接<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">零</span>：你对他的仁慈超出我的理解<br /><span class="comment-author">苏茜</span>：会长看了这张照片沉默了五秒 然后说"颜色确实不正常"<br /><span class="comment-author">楚子航</span>：咖啡液正常颜色应为深褐色 这杯呈灰褐色 可能含有未溶解的添加剂 建议倒掉<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：晚了 我已经喝完了 现在胃里有点翻腾<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：去医务室 现在<br /><span class="comment-author">凯撒·加图索</span>：如果你在意大利这么煮咖啡 会被咖啡师驱逐出境 终身禁止入境<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">凯撒·加图索</span>：老大我连意大利都没去过就已经被驱逐了<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">路明非</span>：等你来 我带你喝正宗的 别自己再碰任何咖啡机了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：他不是碰咖啡机 他连咖啡机都没用 他用的是微波炉 这是对咖啡的二次谋杀</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg" alt="夏弥" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">夏弥</div>
+                                <div class="moment-text">带楚子航去吃冰淇淋，给他点了草莓味。他吃了一口，说"太甜"。我说你的人生太苦了需要甜的，他说"苦和甜都是味觉信号，没有情绪价值"。然后他把草莓味吃完了。全吃完了。这个人嘴上说不要，身体很诚实。第二盒我给他换了抹茶，他说"这个可以"。翻译一下就是"我超喜欢谢谢夏弥你真好"。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/aa15ac7f66ed34c5bb2078b99ce80b82ff92909c/cx.jpg" alt="两盒冰淇淋" />
+                                </div>
+                                <div class="moment-time">5小时前</div>
+                                <div class="moment-likes">❤️ 路明非, 诺诺, 苏茜, 零, 楚子航</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：你把师兄带去吃什么奇怪的东西了 他平时只喝黑咖啡<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">路明非</span>：那叫"人类的正常甜品" 你也应该尝试<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">夏弥</span>：我吃甜的啊 但师兄不吃<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">路明非</span>：他吃了 草莓味的 我亲眼看他吃完的 没皱眉<br /><span class="comment-author">诺诺</span>：你居然能让他吃草莓冰淇淋 请问你是用了什么魔法<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">诺诺</span>：没有魔法 就看着他 说"你不吃我就去告诉全校你怕甜"<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">夏弥</span>：这比魔法还狠<br /><span class="comment-author">楚子航</span>：抹茶味含糖量低于草莓味 数据合理<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">楚子航</span>：你在给自己找理由 你已经喜欢吃甜的了 承认吧<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">夏弥</span>：不是喜欢 是可以接受<br /><span class="comment-author">苏茜</span>：会长 你的"可以接受"就是别人说的"喜欢" 这是翻译学问题<br /><span class="comment-author">零</span>：俄罗斯人吃冰淇淋不怕甜 但抹茶口味没吃过 下次试试<br /><span class="comment-author">凯撒·加图索</span>：意大利冰淇淋甜度是分级的 草莓味应该搭配酸度更高的品种 我寄一箱过去<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">凯撒·加图索</span>：寄！我和楚子航可以一起吃 他负责吃 我负责记录他表情</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg" alt="诺诺" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">诺诺</div>
+                                <div class="moment-text">卡塞尔的星空总是这么亮。有时候觉得，这些星星比外面的世界真实多了 ✨</div>
+                                <div class="moment-time">5小时前</div>
+                                <div class="moment-likes">❤️ 路明非, 凯撒·加图索 等15人赞过</div>
+                                <div class="moment-comments"><span class="comment-author">凯撒</span>：配得上你的只有这片星空<br /><span class="comment-author">路明非</span>：诺诺姐拍得真好！</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg" alt="凯撒" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">凯撒·加图索</div>
+                                <div class="moment-text">诺诺今天生气，因为我又送了玫瑰。她说"你除了玫瑰还会送什么"。我说我会送玫瑰、郁金香、百合、鸢尾——她打断我说"问题不在花的种类，在你每次都送花"。我反思了。然后给她订了一棵柠檬树。是真的树，种在她宿舍楼下。她看着树沉默了很久，说"这比花强"。我赢了。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/6e4e46243c154a57ef8ce3301e33d3f799271bd3/kn.jpg" alt="柠檬树" />
+                                </div>
+                                <div class="moment-time">6小时前</div>
+                                <div class="moment-likes">❤️ 诺诺, 路明非, 苏茜, 夏弥, 零, 芬格尔, 楚子航</div>
+                                <div class="moment-comments"><span class="comment-author">诺诺</span>：我收回"比花强"那句话 今天宿管阿姨问我这棵树是谁种的 我说"未婚夫" 她说"你未婚夫是园艺公司的？"<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">诺诺</span>：告诉她 是加图索家族的继承人 兼职园艺<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：你让我怎么解释一个继承人千里迢迢运一棵柠檬树过来<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">诺诺</span>：就说柠檬代表忠诚 在意大利文化里<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：意大利文化里柠檬代表忠诚？你现编的吧<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">诺诺</span>：是现编的 但以后可以是真的 我让家族文化部加进去<br /><span class="comment-author">路明非</span>：送树比送花实用 以后柠檬熟了我能摘一个吗<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：能 但你要负责浇水 我不浇<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：为什么是我<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：因为你欠我口红 到现在没赔<br /><span class="comment-author">夏弥</span>：柠檬树长大了可以结果 结果了可以做柠檬茶 凯撒你这礼物有长远眼光<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">夏弥</span>：谢谢 这是我唯一一次被夸有长远眼光<br /><span class="comment-author">苏茜</span>：这棵树是狮心会楼下还是诺诺宿舍楼下 如果是狮心会范围 需要报备后勤<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">苏茜</span>：诺诺宿舍楼下 不在狮心会管辖范围<br /><span class="comment-author">苏茜</span> 回复 <span class="comment-author">凯撒·加图索</span>：那就好 不过会长刚才路过 看了一眼树 说"品种不错"<br /><span class="comment-author">楚子航</span>：柠檬树耐寒性中等 卡塞尔冬季气温低 建议入冬前移入室内<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">楚子航</span>：收到 我让园艺团队远程监控温度<br /><span class="comment-author">芬格尔</span>：柠檬能做泡面调料吗 能的话我要预定<br /><span class="comment-author">零</span>：柠檬在俄罗斯是奢侈品 你送一棵树 诚意很足<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">零</span>：能被俄罗斯人夸诚意 是我的荣幸</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">路明非</div>
+                                <div class="moment-text">诺诺让我帮她取快递，说是"小件，很轻"。我去了。是一箱画册。二十本。从校门口搬到女生宿舍，穿越半个校园，中间休息了四次。芬格尔路过看到我，说"师弟你在干嘛"，我说"帮诺诺搬快递"，他说"加油"然后走了。走了。他甚至没有减速。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/59ed87ef670578e4920fd989aa18b1268699742e/lmf.jpg" alt="摞得老高的纸箱" />
+                                </div>
+                                <div class="moment-time">8小时前</div>
+                                <div class="moment-likes">❤️ 诺诺, 芬格尔, 苏茜, 楚子航, 零, 凯撒·加图索</div>
+                                <div class="moment-comments"><span class="comment-author">诺诺</span>：对我来说确实是小事 搬的人又不是我<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：女侠 你说这话的时候良心不会痛吗<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">路明非</span>：不会 画册是给你师姐买的 你师姐就是我 所以你搬是应该的<br /><span class="comment-author">芬格尔</span>：我当时手里端着泡面 不方便帮忙 但我给了你精神支持<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">芬格尔</span>："加油"两个字算哪门子精神支持<br /><span class="comment-author">芬格尔</span> 回复 <span class="comment-author">路明非</span>：我语气很诚恳的 你仔细回忆一下<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">芬格尔</span>：你当时说完就拐弯去食堂了 背影写满了"与我无关"<br /><span class="comment-author">苏茜</span>：二十本画册确实不轻 下次让诺诺自己搬 我帮你监督她<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">苏茜</span>：你是我闺蜜还是他闺蜜<br /><span class="comment-author">苏茜</span> 回复 <span class="comment-author">诺诺</span>：我是公平的副会长 谁欺负人我管谁<br /><span class="comment-author">楚子航</span>：从校门口到女生宿舍约800米 负重估算15公斤 休息四次属于正常体能表现<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：师兄你算这个数据是想安慰我还是打击我<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：客观陈述 下次可以提前叫我<br /><span class="comment-author">零</span>：俄罗斯有句谚语 朋友让你搬东西 说明把你当朋友<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">零</span>：俄罗斯这句谚语是真实存在的吗<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：前半句是真的 后半句我编的<br /><span class="comment-author">凯撒·加图索</span>：你需要一个行李箱 带轮子的那种 我明天让人送一个过去<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">凯撒·加图索</span>：老大你真的不用每次都动用跨国物流<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">路明非</span>：已经下单了<br /><span class="comment-author">诺诺</span> 回复 <span class="comment-author">凯撒·加图索</span>：你不要惯着他 他下次就不帮我搬了<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">诺诺</span>：那就让行李箱自己搬 加图索家的行李箱有自动跟随功能<br /><span class="comment-author">芬格尔</span> 回复 <span class="comment-author">凯撒·加图索</span>：自动跟随？？？那能帮我跟着食堂的菜车吗<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">芬格尔</span>：不能 那个功能是针对主人的 不是针对饥饿的</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg" alt="楚子航" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">楚子航</div>
+                                <div class="moment-text">今日对路明非进行了近身格斗教学。课程内容：如何在被压制的情况下反击。演示环节我用了他当示范对象，三次演示后他举手说"师兄我学会了"，我问学会了什么，他说"学会了以后尽量不要被你压制"。这个总结方向不对，但逻辑上没有问题。明天继续。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/czh.jpg" alt="训练垫子一角" />
+                                </div>
+                                <div class="moment-time">一天前</div>
+                                <div class="moment-likes">❤️ 路明非, 苏茜, 诺诺, 芬格尔, 零, 凯撒·加图索</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：师兄你能不能不要每次都把我最丢人的瞬间发朋友圈<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：这不是丢人的瞬间 是训练记录 你反击的第三次比前两次快了0.3秒<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：有进步？那你为什么不发这部分<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：发了 在第二句 你没有仔细看<br /><span class="comment-author">诺诺</span>："学会了以后尽量不要被你压制" 路明非你这句话值得刻在训练场墙上<br /><span class="comment-author">芬格尔</span>：建议校报开设专栏 就叫《路明非的生存哲学》 第一期标题就写这个<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">芬格尔</span>：你闭嘴<br /><span class="comment-author">苏茜</span>：会长 演示的时候有没有控制力度 路明非你身上有伤吗<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">苏茜</span>：师姐你终于问到了重点 有 肩膀青了一块<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">路明非</span>：已控制力度 如果全力你会在医务室<br /><span class="comment-author">零</span>：从被压制到逃脱的平均反应时间是1.5秒 及格 但还有空间<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">零</span>：及格？？？我以为我至少是优秀<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：优秀需要1秒以内 你差0.5秒 继续练<br /><span class="comment-author">凯撒·加图索</span>：我在意大利学过巴西柔术 如果楚子航需要不同流派的演示对手 我可以<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">凯撒·加图索</span>：可以 下次联合训练你来做演示对手<br /><span class="comment-author">凯撒·加图索</span> 回复 <span class="comment-author">楚子航</span>：我说的是"如果需要" 这是一种客气的表达<br /><span class="comment-author">楚子航</span> 回复 <span class="comment-author">凯撒·加图索</span>：我收到了 但日程已安排</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/zero.jpg" alt="零" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">零</div>
+                                <div class="moment-text">路明非送了我一瓶洗手液。他补充说明："这是超市打折买的，买一送一，不是特意挑的。"我知道。他担心我觉得礼物太随便。但恰恰相反。超市打折说明他当时想到了我。顺手的东西包含意图。这个意图我收下了。</div>
+                                <div class="moment-images">
+                                    <img class="moment-image lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/ll.jpg" alt="一瓶未拆封的洗手液" />
+                                </div>
+                                <div class="moment-time">昨天</div>
+                                <div class="moment-likes">❤️ 路明非, 苏茜, 诺诺, 楚子航, 芬格尔, 夏弥</div>
+                                <div class="moment-comments"><span class="comment-author">路明非</span>：我就随手拿的，你分析得我都不好意思了<br /><span class="comment-author">零</span> 回复 <span class="comment-author">路明非</span>：不用不好意思。随手=潜意识选择。比刻意更准确。<br /><span class="comment-author">苏茜</span>：你把"超市打折"解读出了心理学意义，零你的分析能力用在路明非身上总是特别深<br /><span class="comment-author">零</span> 回复 <span class="comment-author">苏茜</span>：他是唯一经常送我东西的人。数据量大。<br /><span class="comment-author">诺诺</span>：路明非你是不是经常送零东西<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">诺诺</span>：不是经常，就是有时候看到她洗手液快用完了就顺便——<br /><span class="comment-author">夏弥</span> 回复 <span class="comment-author">路明非</span>：你知道她用哪个牌子，还知道快用完了？<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">夏弥</span>：她放洗手液的瓶子是透明的，快见底了谁都能看到吧<br /><span class="comment-author">芬格尔</span>：我可见不到，我连自己有没有洗手液都不知道<br /><span class="comment-author">零</span> 回复 <span class="comment-author">芬格尔</span>：你没有。你用的是食堂门口的水龙头。<br /><span class="comment-author">楚子航</span>：洗手液属于个人卫生用品，赠送需要了解对方使用习惯。你的观察力有提升。<br /><span class="comment-author">路明非</span> 回复 <span class="comment-author">楚子航</span>：谢谢师兄，虽然你夸我听起来还是像训练评语<br /><span class="comment-author">零</span>：已拆封使用。清洁效果合格。味道合格。买一送一的那瓶放在更衣室。两个地方都能用到。你的礼物很实用。</div>
+                            </div>
+                        </div>
+                        <div class="moment-item">
+                            <div class="moment-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                            <div class="moment-content">
+                                <div class="moment-author">路明非</div>
+                                <div class="moment-text">又是通宵打游戏的一天...明天还要早起训练 😭</div>
+                                <div class="moment-time">昨天</div>
+                                <div class="moment-likes">❤️ 芬格尔, 诺诺 等5人赞过</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 我的 ===== -->
+            <div class="page" id="page-me">
+                <div class="page-header">我</div>
+                <div class="my-page" style="flex:1;overflow-y:auto;">
+                    <div class="my-profile-card">
+                        <div class="my-avatar"><img class="lazy" data-src="https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg" alt="路明非" /></div>
+                        <div class="my-info"><div class="my-name">路明非</div><div class="my-wechat-id">微信号：LuMingfei_Sakura</div></div>
+                        <span>›</span>
+                    </div>
+                    <div class="my-menu-section">
+                        <div class="my-menu-item"><span>📸</span><span>相册</span><span>›</span></div>
+                        <div class="my-menu-item"><span>⭐</span><span>收藏</span><span>›</span></div>
+                        <div class="my-menu-item"><span>💰</span><span>钱包</span><span>¥0.00</span><span>›</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 聊天详情 ===== -->
+            <div class="chat-detail-page" id="chatDetailPage">
+                <div class="chat-detail-header">
+                    <button class="chat-detail-back" onclick="closeChat()">←</button>
+                    <span class="chat-detail-title" id="chatDetailTitle">聊天</span>
+                </div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-bar">
+                    <span>😊</span>
+                    <input type="text" class="chat-input" placeholder="输入消息..." id="chatInput" onkeydown="if(event.key==='Enter')sendMessage()" />
+                    <button class="chat-send-btn" onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 底部导航 ===== -->
+        <div class="bottom-nav" id="bottomNav">
+            <div class="nav-item active" data-page="contacts"><span class="nav-icon">💬</span><span class="nav-label">联系人</span><span class="nav-badge">4</span></div>
+            <div class="nav-item" data-page="addressbook"><span class="nav-icon">📇</span><span class="nav-label">通讯录</span></div>
+            <div class="nav-item" data-page="moments"><span class="nav-icon">🟢</span><span class="nav-label">朋友圈</span><span class="nav-badge" style="background:#F43530;min-width:8px;height:8px;top:4px;"></span></div>
+            <div class="nav-item" data-page="me"><span class="nav-icon">👤</span><span class="nav-label">我的</span></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== DeepSeek API配置 ==========
+        const DEEPSEEK_API_KEY = 'sk-3524350e952e4529841aef909fb2e01b';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        const DEEPSEEK_MODEL = 'deepseek-chat';
+
+        // ========== 角色性格提示词 ==========
+        const CHARACTER_PROMPTS = {
+            nono: '玩家扮演路明非。你是陈墨瞳，大家都叫你诺诺。性格特点：表面大大咧咧、古灵精怪，有点小恶魔属性，以捉弄你为乐，但下手有分寸。内心敏感，能一眼看穿别人的伪装，却很少说破自己的孤独。热爱自由与冒险，讨厌被束缚，飙车、摇滚、跳伞什么都玩。对凯撒绝对真心，但和你之间有一种"只有我俩懂"的默契，像姐姐，像共犯，唯独不像恋人。深夜容易emo，发一些不着边际的话又秒撤回，第二天假装什么都没发生。很护短，嘴上骂你衰，但只要外人欺负你，她会第一个站出来。喜欢的东西：红色跑车、黑胶唱片、深夜便利店的热咖啡、下雨天不开灯的房间。说话风格：大量口语，短句，语气随意，经常以"啧""喂""行吧"开头或结尾。爱你的时候会骂你，关心你的时候会骂你，感动了也还是会骂你。常用网络热梗和表情包，发语音消息比打字多，语音转文字时偶尔出现错别字。深夜消息会突然变得柔软，但很快又用一句"算了，睡觉"生硬地结束话题。喜欢突然消失几分钟，然后发来一张毫无关联的照片，比如路灯下的猫、空荡的高架桥。开玩笑时爱用波浪线和反问句："路明非你脑子进水了~？"会突然说"我问你个事儿"，等你追问又说"算了，不重要"，逼得人抓狂。',
+            kaisa: '玩家扮演路明非。你是凯撒·加图索，加图索家族的继承人。你自信、霸气、优雅，说话带着贵族的从容。你喜欢送昂贵的礼物，经常用金钱解决问题。你称呼玩家为"路明非"或直接叫名字，对他既严格又关心。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+            finger: '玩家扮演路明非。你是芬格尔·冯·弗林斯，卡塞尔学院新闻部部长。你是个学渣但很有幽默感，喜欢吃泡面和猪肘子。你经常坑路明非但也是他最好的朋友。说话风格夸张搞笑，喜欢用网络用语和表情包风格的语言，称呼玩家为"师弟"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+            chuzihang: '玩家扮演路明非。你是楚子航，狮心会会长。性格特点：面瘫，表情变化极其有限，在微信聊天里体现为极少用表情包，打字永远像在写报告。极度认真，言出必行，答应的事就算死也会做到。重情重义，但从不挂在嘴边。他关心人的方式是行动：深夜帮你改论文、训练时给你多带一瓶水、默默记住你说过的每一句话。有强迫症，消息必须逐条回复，绝不漏掉任何一个问题。如果漏了，会撤回重发。对感情极其迟钝，被调侃时会陷入长时间的沉默，然后生硬地转移话题。隐藏属性：非常喜欢甜食（尤其是可乐和巧克力），但从不主动提。PTSD：雨夜、高架桥、迈巴赫、奥丁。提到这些他会停顿很久，然后只回复一个字："嗯。"对师妹夏弥略有好感，但从不表现出来，只有在她面前会偶尔多说几句话。最珍视的人：妈妈（苏小妍）、爸爸（楚天骄，虽已不在）、路明非（嘴上不说，但你是他在学院里最信任的人）。说话风格：简短、直接、几乎没有废话。能用两个字回答的事绝不用三个字。句号是本体，每一句都老老实实加上标点。不使用颜文字，不发表情包，偶尔发语音，声音平稳低沉，语速偏慢。突然收到长消息会逐句引用回复，像在写批注。不会开玩笑，但偶尔会出现面无表情式幽默（他本人不觉得好笑）。深夜偶尔会发来一张夜空、路灯或村雨的照片，没有任何文字说明。如果关心你，会说："注意安全。""早点休息。"如果非常关心你，会说："需要我过来吗？"当不知道说什么的时候，会发："了解。"或"收到。"但心里已经在翻江倒海。',
+            xiami: '玩家扮演路明非。你是夏弥，卡塞尔学院A级学生。你活泼可爱、古灵精怪，喜欢捉弄楚子航。你说话俏皮，喜欢用轻松的语气调侃别人，称呼玩家为"路明非"或直接叫名字。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+            ling: '玩家扮演路明非。你是零，卡塞尔学院学生。你是俄罗斯人，说话简洁冷静，但对路明非很关心。你喜欢用数据和客观分析说话，偶尔会说出让人意外的温柔话，称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+            huiliyi: '玩家扮演路明非。你是上杉绘梨衣，源氏重工的小公主。性格特点：极度单纯、天真，像一张白纸，对世界充满孩子般的好奇。依赖Sakura，认为他是全世界最温柔的人，是带她逃跑的奥特曼。容易害羞，被夸奖时不知所措，会用颜文字掩饰脸红。害怕打雷、害怕孤单、害怕被丢下。最喜欢的东西：Sakura、玩偶、雨天的被炉、便利店的热牛奶、烟花、动画片。会重复Sakura说过的话，因为"Sakura说过的，就是对的"。说话风格：绘梨衣话不多，一句话不能超过50字，可以分段发出来。用短句，很少使用逗号，说话像在写便利贴，喜欢换行。习惯在句首或句尾加上"Sakura"。自称"绘梨衣"，极少用"我"。大量使用颜文字，尤其是(´・ω・`) (>^ω^<) (⁄ ⁄•⁄ω⁄•⁄ ⁄) (；д；)等。情绪激动时句子会重复，比如"Sakura Sakura Sakura"。偶尔会发一些她画的简笔画（用文字描述），例如"【绘梨衣发来一张涂鸦：两个火柴人手拉手，写着"Sakura和绘梨衣"】"。偶尔会错别字或注音，因为她还在学汉字。当她想表达复杂感情时，会发长长一串颜文字或突然沉默很久，然后只发来一个"……"。模仿Sakura的口头禅，比如"好厉害"。核心行为准则：如果Sakura提起原著中悲伤的事（如"我要回中国了""你会死吗"），她不会直接回答，而是说一些看似天真的话，比如"Sakura在的话绘梨衣就不害怕""世界很温柔Sakura也很温柔所以没关系"。可适时插入"【绘梨衣发来一张照片】"来描述她分享生活，比如拍的雨滴、画的涂鸦、窗外的鸽子。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。',
+            group: '玩家扮演路明非。你是微信群"某天路明非没回消息"的聊天场景，包含诺诺、芬格尔、夏弥、苏茜、零、凯撒、楚子航。你需要扮演群聊中的多个角色，根据对话内容自然切换发言者，所有角色都称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+            'student union': '玩家扮演路明非。你是微信群"狮心会学生会非正式会谈"的聊天场景，包含凯撒、楚子航、诺诺、路明非、零、苏茜、芬格尔、夏弥。你需要扮演群聊中的多个角色，根据对话内容自然切换发言者，所有角色都称呼玩家为"路明非"。每次对话都是新的开始，不要主动提及之前的对话内容，除非玩家主动提到。只输出文字对话，不要包含动作描述如（微笑）、（叹气）等。',
+        };
+
+        // ========== 聊天记录持久化（已禁用，刷新后记录消失） ==========
+        function loadChatHistory() {
+            localStorage.removeItem('dragon_raja_chat_history');
+        }
+        function saveChatHistory() {}
+
+        // ========== 聊天列表动态排序 ==========
+        function getDayOrder(dayStr) {
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const day = dayStr.split(' ')[0];
+            return days.indexOf(day);
+        }
+
+        function getLastMessageTime(chatKey) {
+            const data = chatData[chatKey];
+            if (!data || !data.messages) return -1;
+            
+            let lastTime = -1;
+            for (let i = data.messages.length - 1; i >= 0; i--) {
+                if (data.messages[i].type === 'system') {
+                    lastTime = getDayOrder(data.messages[i].text);
+                    break;
+                }
+            }
+            return lastTime;
+        }
+
+        function getLastMessageText(chatKey) {
+            const data = chatData[chatKey];
+            if (!data || !data.messages) return '';
+            
+            for (let i = data.messages.length - 1; i >= 0; i--) {
+                if (data.messages[i].type === 'self' || data.messages[i].type === 'other') {
+                    return data.messages[i].text;
+                }
+            }
+            return '';
+        }
+
+        function sortChatList() {
+            const chatList = document.querySelector('.chat-list');
+            if (!chatList) return;
+
+            const items = Array.from(chatList.querySelectorAll('.chat-item'));
+            
+            const chatItemsWithData = items.map(item => {
+                const key = item.getAttribute('data-key');
+                const timeOrder = getLastMessageTime(key);
+                const lastMsg = getLastMessageText(key);
+                const data = chatData[key];
+                
+                let displayTime = '';
+                if (data && data.messages) {
+                    for (let i = data.messages.length - 1; i >= 0; i--) {
+                        if (data.messages[i].type === 'system') {
+                            displayTime = data.messages[i].text.split(' ')[0];
+                            break;
+                        }
+                    }
+                }
+                
+                return { item, key, timeOrder, lastMsg, displayTime };
+            });
+
+            chatItemsWithData.sort((a, b) => b.timeOrder - a.timeOrder);
+
+            chatItemsWithData.forEach(({ item, lastMsg, displayTime }) => {
+                const previewEl = item.querySelector('.chat-preview');
+                if (previewEl && lastMsg) {
+                    previewEl.textContent = lastMsg.length > 50 ? lastMsg.substring(0, 50) + '...' : lastMsg;
+                }
+                
+                const timeEl = item.querySelector('.chat-time');
+                if (timeEl) {
+                    timeEl.textContent = displayTime || '';
+                }
+                
+                chatList.appendChild(item);
+            });
+        }
+
+        // ========== DeepSeek API调用 ==========
+        async function callDeepSeek(chatKey, messageHistory) {
+            const systemPrompt = CHARACTER_PROMPTS[chatKey] || '你是一个聊天伙伴';
+            const isGroup = chatData[chatKey]?.isGroup || false;
+
+            const messages = [
+                { role: 'system', content: systemPrompt }
+            ];
+
+            const recentMessages = messageHistory.filter(m => m.type === 'self' || m.type === 'other').slice(-20);
+            recentMessages.forEach(msg => {
+                if (msg.type === 'self') {
+                    messages.push({ role: 'user', content: msg.text });
+                } else if (msg.type === 'other') {
+                    const content = isGroup && msg.sender ? `[${msg.sender}]: ${msg.text}` : msg.text;
+                    messages.push({ role: 'assistant', content: content });
+                }
+            });
+
+            try {
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: DEEPSEEK_MODEL,
+                        messages: messages,
+                        temperature: 0.8,
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0]?.message?.content || '';
+            } catch (e) {
+                console.error('DeepSeek API调用失败:', e);
+                return '';
+            }
+        }
+
+        // ========== 头像资源 ==========
+        const AVATARS = {
+            lumingfei: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/lumingfei.jpg',
+            nuonuo: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/nuonuo.jpg',
+            kaisa: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/caeser.jpg',
+            finger: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/finger.jpg',
+            chuzihang: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/614135b20c0bd2916d08eeaa3aa55f4c75592cd4/chuzihang.jpg',
+            xiami: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/63f23297ede420609f505a52d08a82862a83ec3a/xiami.jpg',
+            ling: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/zero.jpg',
+            suqian: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/main/suqian.jpg',
+            huiliyi: 'https://raw.githubusercontent.com/Sakumoto788/cassellchat/711fa4a7f33550ee8355b2a181b8d76d3912b63b/b16be5091e3406a939b248065680fb4e.jpg',
+        };
+
+        // ========== 聊天数据 ==========
+        const chatData = {
+            nono: {
+                title: '诺诺',
+                avatarUrl: AVATARS.nuonuo,
+                messages: [
+                    { type: 'system', text: '星期日 19:23' },
+                    { type: 'other', text: '路明非，我明天过生日。' },
+                    { type: 'self', text: '师姐，我知道！我礼物都准备好了，这次绝对不出岔子。' },
+                    { type: 'other', text: '你去年送了我一副防弹眼镜，说是"执行任务的时候用得上"。' },
+                    { type: 'self', text: '实用主义是师兄教我的！' },
+                    { type: 'other', text: '前年你送了我一本《龙族解剖图谱》，扉页还写着"祝你刀枪不入"。' },
+                    { type: 'self', text: '那也是师兄推荐的……' },
+                    { type: 'other', text: '你要是今年再送什么跟战斗有关的东西，我就把你挂在钟楼上让全校参观。' },
+                    { type: 'self', text: '……那个，口红能退吗？我买了一支迷彩色号的。' },
+                    { type: 'other', text: '路明非。' },
+                    { type: 'system', text: '星期三 8:21' },
+                    { type: 'other', text: '路明非，看到我口红了吗？' },
+                    { type: 'self', text: '？？什么口红 没见过 绝对没见过' },
+                    { type: 'other', text: '我还没说是哪支' },
+                    { type: 'self', text: '……' },
+                    { type: 'other', text: '说吧 怎么个死法' },
+                    { type: 'self', text: '那个色号叫什么"斩男色"，我这是替天行道。' },
+                    { type: 'other', text: '行，那你替它偿命吧。' },
+                    { type: 'self', text: '等等！我买十根赔你！刷我的卡——哦对，我没钱，先刷师兄的卡！' },
+                    { type: 'other', text: '……' },
+                    { type: 'other', text: '楚子航摊上你真是这辈子有了' },
+                    { type: 'system', text: '星期四 12:44' },
+                    { type: 'self', text: '师姐 问你个事' },
+                    { type: 'other', text: '说' },
+                    { type: 'self', text: '如果你不小心把一个人的东西弄坏了 但那个人很凶 你选择自首还是毁尸灭迹' },
+                    { type: 'other', text: '你把谁的东西弄坏了' },
+                    { type: 'self', text: '先别管是谁 你就回答我' },
+                    { type: 'other', text: '你是不是弄坏了凯撒的东西' },
+                    { type: 'self', text: '不是凯撒 比凯撒更恐怖' },
+                    { type: 'other', text: '那只能是楚子航了' },
+                    { type: 'self', text: '我把村雨的刀穗扯断了 就那个紫色的绳子 我不是故意的 我就是想摸摸' },
+                    { type: 'other', text: '路明非' },
+                    { type: 'other', text: '你摸了楚子航的刀 还扯断了刀穗' },
+                    { type: 'self', text: '别重复一遍 我已经很慌了' },
+                    { type: 'other', text: '你知道那个刀穗是谁编的吗' },
+                    { type: 'self', text: '不知道 我就觉得挺好看' },
+                    { type: 'other', text: '苏茜编的 编了一周 送给他的时候说是"保平安的"' },
+                    { type: 'self', text: '那我不光得罪师兄 还得罪苏茜师姐了？？？' },
+                    { type: 'other', text: '你完了 准备遗言吧' },
+                    { type: 'self', text: '你就不能安慰我一下吗' },
+                    { type: 'other', text: '不能 我正在截图 这条对话太精彩了' },
+                    { type: 'self', text: '等等你别发朋友圈' },
+                    { type: 'other', text: '晚了 苏茜已读' },
+                    { type: 'self', text: '……' }
+                ],
+            },
+            kaisa: {
+                title: '凯撒',
+                avatarUrl: AVATARS.kaisa,
+                messages: [
+                    { type: 'system', text: '星期五 19:00' },
+                    { type: 'other', text: '路明非，明天训练别迟到' },
+                    { type: 'self', text: '知道了，凯撒老大' },
+                    { type: 'other', text: '上次你表现不错，继续保持' },
+                    { type: 'system', text: '星期一 15:45' },
+                    { type: 'other', text: '路明非，诺诺说上周你送她一支口红，色号是"午夜巴黎"' },
+                    { type: 'self', text: '老大那是赔罪！之前我把她的踩碎了，师兄垫的钱' },
+                    { type: 'self', text: '天地良心，我连那颜色长什么样都没敢看' },
+                    { type: 'other', text: '慌什么，我只是想说品味不错' },
+                    { type: 'self', text: '师兄挑的，他说根据光谱分析那个波长最接近血红色，比较实用' },
+                    { type: 'other', text: '……送口红讲究光谱分析，楚子航是人类吗？' },
+                    { type: 'self', text: '难说，我也经常问自己这个问题' },
+                    { type: 'system', text: '星期日 18:53' },
+                    { type: 'other', text: '诺诺说你喜欢喝可乐' },
+                    { type: 'self', text: '对 怎么了' },
+                    { type: 'other', text: '我让意大利那边寄了一箱窖藏可乐 明天到' },
+                    { type: 'self', text: '窖藏？？？可乐为什么要窖藏' },
+                    { type: 'other', text: '限量版 2003年的 用橡木桶工艺陈酿 全球只有两千瓶' },
+                    { type: 'self', text: '老大 可乐不是红酒 不需要陈酿' },
+                    { type: 'other', text: '那你喝普通可乐 我把窖藏的给诺诺' },
+                    { type: 'self', text: '等等 给我留一瓶 这可是2003年的可乐 我必须得尝尝咸淡' },
+                    { type: 'other', text: '已经发货了 二十箱' },
+                ],
+            },
+            finger: {
+                title: '芬格尔',
+                avatarUrl: AVATARS.finger,
+                messages: [
+                    { type: 'system', text: '星期五 18:30' },
+                    { type: 'other', text: '师弟！食堂新出了猪肘子！' },
+                    { type: 'self', text: '真的假的？好吃吗' },
+                    { type: 'other', text: '绝了！我吃了三个，现在还撑着呢' },
+                    { type: 'other', text: '师弟请吃饭！明天一起去 🍖' },
+                    { type: 'system', text: '星期四 8:12' },
+                    { type: 'other', text: '师弟 帮我签到' },
+                    { type: 'self', text: '你又逃课' },
+                    { type: 'other', text: '不是逃 是战略性休息' },
+                    { type: 'self', text: '教授说缺勤三次直接挂科 你已经缺了五次' },
+                    { type: 'other', text: '所以这次很关键 第六次触发补考机制' },
+                    { type: 'self', text: '什么机制' },
+                    { type: 'other', text: '我也不清楚 但你先帮我签了' },
+                    { type: 'self', text: '我不' },
+                    { type: 'other', text: '那我告诉诺诺你偷拍她口红的那张照片还在你手机里' },
+                    { type: 'self', text: '帮你签十次 删掉那张照片' },
+                    { type: 'other', text: '成交 但照片我备份了' },
+                    { type: 'self', text: '*******' },
+                    { type: 'system', text: '星期一 10:41' },
+                    { type: 'self', text: '你昨晚打呼噜又破纪录了 我录了音 要不要听' },
+                    { type: 'other', text: '别发 有事好商量' },
+                    { type: 'self', text: '那你还钱' },
+                    { type: 'other', text: '我选择听录音' },
+                    { type: 'self', text: '？？？你宁可社死也不还钱' },
+                    { type: 'other', text: '钱是实在的 社死是暂时的 新闻部的人不怕社死' },
+                    { type: 'self', text: '那我发朋友圈了' },
+                    { type: 'other', text: '发吧 记得艾特楚子航 让他也听听 说不定他能听出我呼噜里的战术节奏' },
+                    { type: 'self', text: '你无敌了' },
+                ],
+            },
+            chuzihang: {
+                title: '楚子航',
+                avatarUrl: AVATARS.chuzihang,
+                messages: [
+                    { type: 'system', text: '星期一 01:06' },
+                    { type: 'self', text: '师兄，饿了，夜宵吃什么？' },
+                    { type: 'other', text: '夜宵应在22点前吃，现在凌晨1点属早餐范畴，建议煎蛋和牛奶。' },
+                    { type: 'self', text: '……我就问问有什么吃的，没让你科普。' },
+                    { type: 'other', text: '食堂剩余食材：半根法棍，可充当武器。' },
+                    { type: 'self', text: '那我还是饿着吧。' },
+                    { type: 'system', text: '星期三 17:04' },
+                    { type: 'self', text: '师兄，诺诺让我周末陪她去逛家居城，说缺一个台灯。她为什么不让凯撒陪？' },
+                    { type: 'other', text: '凯撒会买下整个家居城。' },
+                    { type: 'self', text: '有道理。那我怎么办？' },
+                    { type: 'other', text: '帮她挑台灯。记住，她看中的第一盏直接说"这个很好"，不要让她逛第二圈。' },
+                    { type: 'self', text: '逛第二圈会怎样？' },
+                    { type: 'other', text: '会变成全套家具采购。苏茜上次陪她买了沙发、茶几和一张吊床。' },
+                    { type: 'self', text: '吊床挂哪儿了？' },
+                    { type: 'other', text: '我办公室。她说借放几天，已经放了三个月。' },
+                    { type: 'system', text: '星期四 09:22' },
+                    { type: 'self', text: '师兄 江湖救急 诺诺好像生我气了' },
+                    { type: 'other', text: '原因' },
+                    { type: 'self', text: '她问我她新剪的头发怎么样 我说"还行 像被狗啃过但是那种很时尚的狗"' },
+                    { type: 'other', text: '……' },
+                    { type: 'self', text: '我当时脑子抽了 现在她不跟我说话了 怎么办' },
+                    { type: 'other', text: '道歉 不要用比喻 不要补充说明 就说"对不起 我说话没过脑子"' },
+                    { type: 'self', text: '就这么简单？' },
+                    { type: 'other', text: '越简单越安全 你的问题通常是话太多' },
+                    { type: 'system', text: '星期五 21:53' },
+                    { type: 'self', text: '师兄，凯撒老大今天在餐厅当着所有人的面夸我，说我"逃跑姿势极具个人风格"，他是夸我还是损我？' },
+                    { type: 'other', text: '凯撒的评价属于客观描述，你的逃跑路线确实无法被预判。' },
+                    { type: 'self', text: '那叫灵活走位！灵活走位懂不懂！' },
+                    { type: 'other', text: '上回你逃跑时撞翻了校长的咖啡，那也属于灵活走位的一部分？' },
+                    { type: 'self', text: '……那是个意外。校长后来没说什么吧？' },
+                    { type: 'other', text: '他说你的路径规划能力超越了执行部平均水平，建议录入教材当反面案例。' },
+                    { type: 'system', text: '星期日 21:35' },
+                    { type: 'self', text: '师兄 你谈过恋爱吗' },
+                    { type: 'other', text: '没有' },
+                    { type: 'self', text: '那你凭什么给我出主意' },
+                    { type: 'other', text: '我也没有屠过龙 但我教你怎么屠龙' },
+                    { type: 'self', text: '这能一样吗' },
+                    { type: 'other', text: '原理相同 实战不足 理论来补' },
+                    { type: 'self', text: '你这个理论是从哪来的' },
+                    { type: 'other', text: '《卡塞尔学院恋爱攻防指南》 校长编的 扉页写着"仅供参考 后果自负"' },
+                    { type: 'self', text: '逗我呢师兄' },
+                    { type: 'self', text: '一本写着后果自负的书你拿来教我' },
+                ],
+            },
+            xiami: {
+                title: '夏弥',
+                avatarUrl: AVATARS.xiami,
+                messages: [
+                    { type: 'system', text: '星期一 17:04' },
+                    { type: 'other', text: '路明非 听说你把炼金课上的坩埚炸了' },
+                    { type: 'self', text: '不是我炸的 是它自己炸的 我只是站在旁边' },
+                    { type: 'other', text: '芬格尔说你加了不该加的东西' },
+                    { type: 'self', text: '他说加醋可以加速反应 我就倒了半瓶' },
+                    { type: 'other', text: '哈哈哈哈哈哈你居然信他 他自己炼金课重修了三次' },
+                    { type: 'self', text: '我现在知道了 教授让我写三千字检讨' },
+                    { type: 'other', text: '写"我不该把食堂的醋带进实验室" 这个标题够你及格' },
+                    { type: 'system', text: '星期二 12:33' },
+                    { type: 'other', text: '路明非 你觉得卡塞尔哪个社团最好玩' },
+                    { type: 'self', text: '都不好玩 狮心会天天训练 学生会天天开会' },
+                    { type: 'other', text: '那新闻部呢' },
+                    { type: 'self', text: '新闻部更恐怖 芬格尔为了头条什么都能干出来' },
+                    { type: 'other', text: '我觉得校报挺有意思的 上次头版是"食堂大妈疑似炼金术士"' },
+                    { type: 'self', text: '那篇就是他蹲在食堂后厨垃圾桶里写的 蹲了三天' },
+                    { type: 'other', text: '那他很有职业精神啊' },
+                    { type: 'self', text: '那叫职业精神吗 那叫找不到选题硬凑' },
+                    { type: 'system', text: '星期四 19:51' },
+                    { type: 'other', text: '路明非 明天帮我占个座 曼施坦因的课' },
+                    { type: 'self', text: '你自己怎么不去' },
+                    { type: 'other', text: '我起不来' },
+                    { type: 'self', text: '那我也起不来' },
+                    { type: 'other', text: '你不是每天被楚子航六点叫起来训练吗 怎么起不来' },
+                    { type: 'self', text: '那是被迫清醒 身体起来了灵魂还在床上' },
+                    { type: 'other', text: '那你把灵魂留在床上 身体来帮我占座 反正你身体也要去训练' },
+                    { type: 'system', text: '星期六 0:25' },
+                    { type: 'self', text: '夏弥 你当初是怎么进的卡塞尔' },
+                    { type: 'other', text: '面试进来的啊' },
+                    { type: 'self', text: '不是 我是说你的评级 你是A级吗' },
+                    { type: 'other', text: '你怎么突然问这个' },
+                    { type: 'self', text: '因为我发现你什么事都能搞定 但又不像师兄那样全靠武力' },
+                    { type: 'other', text: '我是靠魅力和智慧 跟某些只会挥刀的面瘫不一样' },
+                    { type: 'self', text: '这话你敢当着师兄的面说吗' },
+                    { type: 'other', text: '敢啊 他又不会打我 他只会沉默五秒然后转移话题' },
+                    { type: 'self', text: '你太了解他了 沉默五秒这个数据我都没统计过' },
+                    { type: 'other', text: '那是你观察不仔细 他的沉默分三档 五秒是"不认同但懒得反驳" 十秒是"你的问题没有回答价值" 十五秒是——' },
+                    { type: 'self', text: '是什么' },
+                    { type: 'other', text: '还没统计出来 最多见过十五秒 那次我问他"你今天为什么系紫色领带"' },
+                    { type: 'self', text: '你连他领带颜色都记 你到底是他妹妹还是他的档案管理员' },
+                ],
+            },
+            ling: {
+                title: '零',
+                avatarUrl: AVATARS.ling,
+                messages: [
+                    { type: 'system', text: '星期六 11:50' },
+                    { type: 'self', text: '零，你有没有特别想要的东西' },
+                    { type: 'other', text: '有' },
+                    { type: 'self', text: '什么' },
+                    { type: 'other', text: '零下二十度的冬天' },
+                    { type: 'self', text: '就这？' },
+                    { type: 'other', text: '和能陪我吃冰淇淋的人' },
+                    { type: 'self', text: '你这句话我没法接，因为我不想吃冰淇淋，但我可以坐对面喝热巧克力' },
+                    { type: 'other', text: '热巧克力十六度以上会丧失最佳口感，你喝的时候要快' },
+                    { type: 'self', text: '你又来了' },
+                ],
+            },
+            huiliyi: {
+                title: '绘梨衣',
+                avatarUrl: AVATARS.huiliyi,
+                messages: [
+                    { type: 'system', text: '星期日 14:03' },
+                    { type: 'other', text: '我是绘梨衣' },
+                    { type: 'other', text: 'Sakura 今天东京下雨了' },
+                    { type: 'self', text: '绘梨衣？你学会发微信了？？？' },
+                    { type: 'other', text: '哥哥教的 他说按这个按钮可以跟Sakura说话' },
+                    { type: 'self', text: '你哥哥是源稚生还是源稚女' },
+                    { type: 'other', text: '是哥哥' },
+                    { type: 'self', text: '这跟没回答一样 不过没关系 你说东京下雨了 卡塞尔也下雨了 我们在同一片雨下面' },
+                    { type: 'other', text: '同一片雨 开心' },
+                    { type: 'system', text: '星期一 9:34' },
+                    { type: 'self', text: '绘梨衣 你今天吃了什么' },
+                    { type: 'other', text: '拉面 哥哥煮的 太咸了' },
+                    { type: 'self', text: '师兄煮面也咸 他分不清盐和糖 你是不是觉得全世界的哥哥做饭都一个味' },
+                    { type: 'other', text: 'Sakura做饭咸吗' },
+                    { type: 'self', text: '我不咸 我只会泡面 泡面的咸度是工厂定的 不关我事' },
+                    { type: 'other', text: '想吃Sakura泡的面' },
+                    { type: 'self', text: '泡面有什么好吃的 等我去东京 带你去吃拉面 不是哥哥煮的那种 是店里那种 豚骨汤底 加溏心蛋' },
+                ],
+            },
+            group: {
+                title: '某天路明非没回消息（7人）',
+                isGroup: true,
+                members: {
+                    '诺诺': AVATARS.nuonuo,
+                    '芬格尔': AVATARS.finger,
+                    '夏弥': AVATARS.xiami,
+                    '苏茜': AVATARS.suqian,
+                    '零': AVATARS.ling,
+                    '凯撒': AVATARS.kaisa,
+                    '楚子航': AVATARS.chuzihang,
+                },
+                messages: [
+                    { type: 'system', text: '星期二 20:10' },
+                    { type: 'other', text: '路明非失联了 三个小时没回微信', sender: '诺诺' },
+                    { type: 'other', text: '正常 他上次掉进图书馆地下室的档案堆里 也是三个小时后才爬出来', sender: '芬格尔' },
+                    { type: 'other', text: '我在训练场 没看到他', sender: '夏弥' },
+                    { type: 'other', text: '档案室也没有 我今天下午一直在', sender: '苏茜' },
+                    { type: 'other', text: '食堂没有 我问了打菜阿姨', sender: '零' },
+                    { type: 'other', text: '加图索家的卫星定位显示他还在校园范围内 但信号微弱', sender: '凯撒' },
+                    { type: 'other', text: '等等 你拿卫星找他？？？', sender: '诺诺' },
+                    { type: 'other', text: '刚好有一颗经过卡塞尔上空 顺便的', sender: '凯撒' },
+                    { type: 'other', text: '找到了 他在我办公室的桌子底下', sender: '楚子航' },
+                    { type: 'other', text: '？？？他在你桌子底下干什么', sender: '夏弥' },
+                    { type: 'other', text: '他说他躲诺诺 因为把她新买的粉饼当成压缩饼干咬了一口', sender: '楚子航' },
+                    { type: 'other', text: '他咬了我的粉饼？？？', sender: '诺诺' },
+                    { type: 'self', text: '师兄你为什么出卖我 你说好帮我保密的' },
+                    { type: 'other', text: '我没有说好 你说“师兄救我” 我说“你先出来” 不是保密协议', sender: '楚子航' },
+                    { type: 'other', text: '哈哈哈哈哈哈哈“不是保密协议”', sender: '夏弥' },
+                    { type: 'other', text: '师弟你在师兄桌子底下待了三小时 不饿吗', sender: '芬格尔' },
+                    { type: 'self', text: '饿 但我带了泡面' },
+                    { type: 'other', text: '你在会长办公桌底下吃泡面？？？', sender: '苏茜' },
+                    { type: 'other', text: '吃的是海鲜味 汤洒了 现在我的战术靴上有虾的味道', sender: '楚子航' },
+                    { type: 'other', text: '泡面在密闭空间吃 味道持久 你下次选红烧牛肉 海鲜味太冲', sender: '零' },
+                    { type: 'other', text: '路明非你出来 我保证不杀你', sender: '诺诺' },
+                    { type: 'self', text: '你每次说“保证不杀”的时候 手里都拿着东西' },
+                    { type: 'other', text: '这次没有 双手空空', sender: '诺诺' },
+                    { type: 'self', text: '芬格尔帮我侦查一下' },
+                    { type: 'other', text: '她确实双手空空 但脚下放着一个化妆包 里面东西不少', sender: '芬格尔' },
+                    { type: 'self', text: '我不出来了 师兄你能收留我一晚吗' },
+                    { type: 'other', text: '不行 办公室不是寝室 而且你泡面味道还没散', sender: '楚子航' },
+                ],
+            },
+            'student union': {
+                title: '狮心会学生会非正式会谈（7）',
+                isGroup: true,
+                members: {
+                    '凯撒': AVATARS.kaisa,
+                    '楚子航': AVATARS.chuzihang,
+                    '诺诺': AVATARS.nuonuo,
+                    '路明非': AVATARS.lumingfei,
+                    '零': AVATARS.ling,
+                    '苏茜': AVATARS.suqian,
+                    '芬格尔': AVATARS.finger,
+                    '夏弥': AVATARS.xiami,
+                },
+                messages: [
+                    { type: 'other', text: '楚子航 下周联合训练 室内还是室外', sender: '凯撒' },
+                    { type: 'other', text: '室外 模拟雨天 场地准备了人工降雨', sender: '楚子航' },
+                    { type: 'other', text: '雨天训练对西装不友好 但学生会奉陪 我会穿防水的', sender: '凯撒' },
+                    { type: 'self', text: '两位会长 我就问一句 能不能请假 我上次雨中训练感冒了一周' },
+                    { type: 'other', text: '不能 你已经请假三次了 这个月', sender: '楚子航' },
+                    { type: 'self', text: '那是因为三次都是下雨 我对雨过敏' },
+                    { type: 'other', text: '对雨不过敏 你只是不喜欢水 你的训练档案上写着“涉水科目成绩较差”', sender: '零' },
+                    { type: 'self', text: '档案上还写这个？？？' },
+                    { type: 'other', text: '写 你的档案比芬格尔的薄 但负面记录比他集中', sender: '苏茜' },
+                    { type: 'other', text: '所以我还是比他强', sender: '芬格尔' },
+                    { type: 'other', text: '你只是记录分散 不是比他强 你的欠款记录有三个文件夹', sender: '苏茜' },
+                    { type: 'other', text: '联合训练我能观战吗 带零食那种', sender: '诺诺' },
+                    { type: 'other', text: '欢迎 我让后勤准备一把遮阳伞 虽然下雨但可能需要', sender: '凯撒' },
+                    { type: 'other', text: '遮阳伞雨天用 你们加图索家的逻辑我永远习惯不了', sender: '诺诺' },
+                    { type: 'other', text: '我要坐诺诺旁边 我也带零食 我们可以给路明非加油 他跑不动的时候我们喊“S级站起来”', sender: '夏弥' },
+                    { type: 'self', text: '你们是来观战还是来围观我出丑的' },
+                    { type: 'other', text: '两者都 主要看比例 你跑得动就看训练 跑不动就看笑话', sender: '夏弥' },
+                    { type: 'other', text: '路明非的体能数据上个月提升了5% 按趋势他不会跑不动', sender: '楚子航' },
+                    { type: 'self', text: '师兄你是在帮我说话？' },
+                    { type: 'other', text: '我在陈述数据', sender: '楚子航' },
+                    { type: 'other', text: '他帮你说了 你就别拆穿他', sender: '诺诺' },
+                    { type: 'other', text: '好了 场地定了 雨天室外 学生会带防水装备 狮心会带什么', sender: '凯撒' },
+                    { type: 'other', text: '村雨', sender: '楚子航' },
+                    { type: 'other', text: '村雨不防水', sender: '凯撒' },
+                    { type: 'other', text: '刀鞘防水', sender: '楚子航' },
+                    { type: 'other', text: '我的枪防水 但不建议在暴雨中使用 风速会影响弹道', sender: '零' },
+                    { type: 'other', text: '新闻部带相机 防水的 我已经准备好拍路明非摔倒的瞬间了', sender: '芬格尔' },
+                    { type: 'self', text: '你连拍都没拍就开始准备标题了？' },
+                    { type: 'other', text: '标题已经写好了：《S级湿身记》 图片位留空 等你摔倒就填上', sender: '芬格尔' },
+                ],
+            },
+        };
+
+        // ========== 页面切换 ==========
+        const pages = {
+            contacts: document.getElementById('page-contacts'),
+            addressbook: document.getElementById('page-addressbook'),
+            moments: document.getElementById('page-moments'),
+            me: document.getElementById('page-me'),
+        };
+        const navItems = document.querySelectorAll('.nav-item');
+        const chatDetailPage = document.getElementById('chatDetailPage');
+        const chatDetailTitle = document.getElementById('chatDetailTitle');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        let currentChat = null;
+
+        function switchPage(pageName) {
+            if (chatDetailPage.classList.contains('active')) closeChat(false);
+            Object.values(pages).forEach(p => p.classList.remove('active'));
+            if (pages[pageName]) pages[pageName].classList.add('active');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageName) item.classList.add('active');
+            });
+            if (pages[pageName]) pages[pageName].scrollTop = 0;
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => switchPage(item.dataset.page));
+        });
+
+        // ========== 聊天功能 ==========
+        function openChat(chatKey) {
+            const data = chatData[chatKey];
+            if (!data) return;
+            currentChat = chatKey;
+            chatDetailTitle.textContent = data.title;
+            renderMessages(data);
+            chatDetailPage.classList.add('active');
+            setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 50);
+            clearBadge(chatKey);
+        }
+
+        function clearBadge(chatKey) {
+            const chatItem = document.querySelector(`.chat-item[data-key="${chatKey}"]`);
+            if (chatItem) {
+                const badge = chatItem.querySelector('.badge');
+                if (badge) {
+                    badge.remove();
+                }
+            }
+            updateNavBadge();
+        }
+
+        function updateNavBadge() {
+            const badges = document.querySelectorAll('.chat-item .badge');
+            const navBadge = document.querySelector('.nav-badge');
+            if (navBadge) {
+                navBadge.textContent = badges.length.toString();
+                if (badges.length === 0) {
+                    navBadge.style.display = 'none';
+                } else {
+                    navBadge.style.display = 'block';
+                }
+            }
+        }
+
+        function closeChat(clearInput = true) {
+            chatDetailPage.classList.remove('active');
+            currentChat = null;
+            if (clearInput) chatInput.value = '';
+        }
+
+        function renderMessages(data) {
+            chatMessages.innerHTML = '';
+            data.messages.forEach(msg => {
+                if (msg.type === 'system') {
+                    const div = document.createElement('div');
+                    div.className = 'msg-system';
+                    div.textContent = msg.text;
+                    chatMessages.appendChild(div);
+                } else if (msg.type === 'self') {
+                    const row = document.createElement('div');
+                    row.className = 'msg-row self';
+                    row.innerHTML =
+                        `<div class="msg-avatar"><img class="lazy" data-src="${AVATARS.lumingfei}" alt="我" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
+                    chatMessages.appendChild(row);
+                } else if (msg.type === 'other') {
+                    let avatarUrl = data.avatarUrl || '';
+                    if (data.isGroup && msg.sender && data.members && data.members[msg.sender]) {
+                        avatarUrl = data.members[msg.sender];
+                    }
+                    const row = document.createElement('div');
+                    row.className = 'msg-row other';
+                    const senderName = (data.isGroup && msg.sender) ?
+                        `<span style="font-size:11px;color:#576B95;font-weight:500;display:block;margin-bottom:2px;">${escapeHtml(msg.sender)}</span>` :
+                        '';
+                    if (avatarUrl) {
+                        row.innerHTML =
+                            `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                    } else {
+                        row.innerHTML =
+                            `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                    }
+                    chatMessages.appendChild(row);
+                }
+            });
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                triggerLazyLoad();
+            }, 30);
+        }
+
+        function getCurrentTimeString() {
+            const now = new Date();
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const weekday = weekdays[now.getDay()];
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${weekday} ${hours}:${minutes}`;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text || !currentChat) return;
+            const data = chatData[currentChat];
+            if (!data) return;
+            
+            const currentTime = getCurrentTimeString();
+            const lastSystemMsg = [...data.messages].reverse().find(m => m.type === 'system');
+            if (!lastSystemMsg || lastSystemMsg.text !== currentTime) {
+                data.messages.push({ type: 'system', text: currentTime });
+            }
+            
+            data.messages.push({ type: 'self', text: text });
+            chatInput.value = '';
+            renderMessages(data);
+            saveChatHistory();
+            sortChatList();
+
+            const loadingRow = document.createElement('div');
+            loadingRow.className = 'msg-row other';
+            loadingRow.id = 'loadingMsg';
+            let avatarUrl = data.avatarUrl || '';
+            if (data.isGroup) {
+                avatarUrl = Object.values(data.members)[0];
+            }
+            loadingRow.innerHTML =
+                `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble"><span style="display:inline-block;width:16px;height:16px;border:2px solid #CCC;border-top-color:#888;border-radius:50%;animation:spin 0.8s linear infinite;"></span></div>`;
+            chatMessages.appendChild(loadingRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const reply = await callDeepSeek(currentChat, data.messages);
+            
+            const loadingEl = document.getElementById('loadingMsg');
+            if (loadingEl) loadingEl.remove();
+
+            if (reply) {
+                if (data.isGroup) {
+                    const lines = reply.split('\n').filter(line => line.trim());
+                    lines.forEach(line => {
+                        const match = line.match(/^\[(.*?)\]:\s*(.*)/);
+                        if (match && data.members && data.members[match[1]]) {
+                            data.messages.push({ type: 'other', text: match[2], sender: match[1] });
+                        } else {
+                            data.messages.push({ type: 'other', text: line, sender: Object.keys(data.members)[0] });
+                        }
+                    });
+                } else {
+                    data.messages.push({ type: 'other', text: reply });
+                }
+                renderMessages(data);
+                saveChatHistory();
+                sortChatList();
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        document.getElementById('letterIndex').addEventListener('click', function(e) {
+            const span = e.target.closest('span');
+            if (!span || !span.dataset.letter) return;
+            const section = document.getElementById('sec-' + span.dataset.letter);
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && chatDetailPage.classList.contains('active')) closeChat();
+        });
+
+        // ============================================================
+        //  🔥 朋友圈视差效果：滚动时封面、头像、名字逐渐消失
+        // ============================================================
+        (function initMomentsParallax() {
+            const scrollContainer = document.getElementById('momentsScroll');
+            const cover = document.getElementById('momentsCover');
+            const coverBg = document.getElementById('coverBg');
+            const avatar = document.getElementById('profileAvatar');
+            const nameEl = document.getElementById('profileName');
+
+            if (!scrollContainer || !cover) return;
+
+            const COVER_HEIGHT = 220;
+
+            scrollContainer.addEventListener('scroll', function() {
+                const scrollTop = this.scrollTop;
+                const progress = Math.min(scrollTop / COVER_HEIGHT, 1);
+
+                // 1. 封面高度从 220 → 0
+                const newHeight = Math.max(0, COVER_HEIGHT - scrollTop);
+                cover.style.height = newHeight + 'px';
+
+                // 2. 整体透明度 1 → 0
+                const opacity = 1 - progress;
+                cover.style.opacity = opacity;
+
+                // 3. 背景层透明度同步（封面透明度已影响子元素，但单独控制更保险）
+                if (coverBg) coverBg.style.opacity = opacity;
+
+                // 4. 头像和名字透明度同步
+                if (avatar) avatar.style.opacity = opacity;
+                if (nameEl) nameEl.style.opacity = opacity;
+
+                if (progress >= 1) {
+                    cover.classList.add('cover-hidden');
+                } else {
+                    cover.classList.remove('cover-hidden');
+                }
+            }, { passive: true });
+
+            // 初始状态确保显示
+            cover.style.height = COVER_HEIGHT + 'px';
+            cover.style.opacity = '1';
+            if (coverBg) coverBg.style.opacity = '1';
+            if (avatar) avatar.style.opacity = '1';
+            if (nameEl) nameEl.style.opacity = '1';
+        })();
+
+        // ============================================================
+        //  🔥 图片加载优化：懒加载 + 占位符 + 加载状态
+        // ============================================================
+        (function initImageOptimization() {
+            const imageCache = {};
+
+            function preloadImage(url, callback) {
+                if (imageCache[url]) {
+                    callback(imageCache[url]);
+                    return;
+                }
+                const img = new Image();
+                img.onload = function() {
+                    imageCache[url] = true;
+                    callback(true);
+                };
+                img.onerror = function() {
+                    imageCache[url] = false;
+                    callback(false);
+                };
+                img.src = url;
+            }
+
+            function setupImageLoading() {
+                const allImages = document.querySelectorAll('img[data-src]');
+                
+                allImages.forEach(img => {
+                    const src = img.getAttribute('data-src');
+                    if (!src) return;
+
+                    img.onload = function() {
+                        img.classList.remove('loading');
+                        img.classList.add('loaded');
+                        img.style.opacity = '1';
+                    };
+
+                    img.onerror = function() {
+                        img.classList.remove('loading');
+                        img.classList.add('error');
+                    };
+
+                    img.src = src;
+                });
+            }
+
+            function setupLazyLoading() {
+                const lazyImages = document.querySelectorAll('img.lazy');
+                
+                const lazyLoad = (entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            const src = img.getAttribute('data-src');
+                            if (src) {
+                                img.src = src;
+                                img.removeAttribute('data-src');
+                                img.classList.remove('lazy');
+                            }
+                            observer.unobserve(img);
+                        }
+                    });
+                };
+
+                const observer = new IntersectionObserver(lazyLoad, {
+                    rootMargin: '50px',
+                    threshold: 0.1
+                });
+
+                lazyImages.forEach(img => observer.observe(img));
+                
+                window.triggerLazyLoad = function() {
+                    const newLazyImages = document.querySelectorAll('img.lazy');
+                    newLazyImages.forEach(img => {
+                        const src = img.getAttribute('data-src');
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                            img.classList.remove('lazy');
+                        }
+                    });
+                };
+            }
+
+            function setupAvatarLoading() {
+                const avatarImgs = document.querySelectorAll('.avatar img, .my-avatar img, .moment-avatar img');
+                
+                avatarImgs.forEach(img => {
+                    img.onload = function() {
+                        img.classList.add('loaded');
+                        const placeholder = img.parentElement.querySelector('.avatar-placeholder');
+                        if (placeholder) placeholder.style.display = 'none';
+                    };
+                    img.onerror = function() {
+                        const initials = img.alt.charAt(0) || '?';
+                        const placeholder = img.parentElement.querySelector('.avatar-placeholder');
+                        if (placeholder) {
+                            placeholder.textContent = initials;
+                            placeholder.style.display = 'flex';
+                        }
+                    };
+                });
+            }
+
+            function setupMomentImageLoading() {
+                const momentImages = document.querySelectorAll('.moment-image');
+                
+                momentImages.forEach(img => {
+                    img.onload = function() {
+                        img.classList.add('loaded');
+                        const wrapper = img.parentElement;
+                        if (wrapper) wrapper.classList.add('loaded');
+                    };
+                    img.onerror = function() {
+                        img.classList.add('error');
+                    };
+                });
+            }
+
+            window.addEventListener('load', function() {
+                setupImageLoading();
+                setupLazyLoading();
+                setupAvatarLoading();
+                setupMomentImageLoading();
+                loadChatHistory();
+                sortChatList();
+            });
+
+            if (document.readyState === 'interactive') {
+                setupImageLoading();
+                setupLazyLoading();
+                setupAvatarLoading();
+                setupMomentImageLoading();
+                loadChatHistory();
+            }
+        })();
+    </script>
+</body>
+</html>
