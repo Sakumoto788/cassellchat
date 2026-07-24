@@ -784,6 +784,20 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        @keyframes dotPulse {
+            0%, 20% { opacity: 0; }
+            50% { opacity: 1; }
+            80%, 100% { opacity: 0; }
+        }
+        .loading-dot {
+            display: inline-block;
+            animation: dotPulse 1.4s infinite;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
@@ -1691,41 +1705,86 @@
         function renderMessages(data) {
             chatMessages.innerHTML = '';
             data.messages.forEach(msg => {
-                if (msg.type === 'system') {
-                    const div = document.createElement('div');
-                    div.className = 'msg-system';
-                    div.textContent = msg.text;
-                    chatMessages.appendChild(div);
-                } else if (msg.type === 'self') {
-                    const row = document.createElement('div');
-                    row.className = 'msg-row self';
-                    row.innerHTML =
-                        `<div class="msg-avatar"><img class="lazy" data-src="${AVATARS.lumingfei}" alt="我" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
-                    chatMessages.appendChild(row);
-                } else if (msg.type === 'other') {
-                    let avatarUrl = data.avatarUrl || '';
-                    if (data.isGroup && msg.sender && data.members && data.members[msg.sender]) {
-                        avatarUrl = data.members[msg.sender];
-                    }
-                    const row = document.createElement('div');
-                    row.className = 'msg-row other';
-                    const senderName = (data.isGroup && msg.sender) ?
-                        `<span style="font-size:11px;color:#576B95;font-weight:500;display:block;margin-bottom:2px;">${escapeHtml(msg.sender)}</span>` :
-                        '';
-                    if (avatarUrl) {
-                        row.innerHTML =
-                            `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
-                    } else {
-                        row.innerHTML =
-                            `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
-                    }
-                    chatMessages.appendChild(row);
-                }
+                appendMessage(msg, data);
             });
             setTimeout(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 triggerLazyLoad();
             }, 30);
+        }
+
+        function appendMessage(msg, data) {
+            if (msg.type === 'system') {
+                const div = document.createElement('div');
+                div.className = 'msg-system';
+                div.textContent = msg.text;
+                chatMessages.appendChild(div);
+            } else if (msg.type === 'self') {
+                const row = document.createElement('div');
+                row.className = 'msg-row self';
+                row.innerHTML =
+                    `<div class="msg-avatar"><img class="lazy" data-src="${AVATARS.lumingfei}" alt="我" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${escapeHtml(msg.text)}</div>`;
+                chatMessages.appendChild(row);
+            } else if (msg.type === 'other') {
+                let avatarUrl = data.avatarUrl || '';
+                if (data.isGroup && msg.sender && data.members && data.members[msg.sender]) {
+                    avatarUrl = data.members[msg.sender];
+                }
+                const row = document.createElement('div');
+                row.className = 'msg-row other';
+                const senderName = (data.isGroup && msg.sender) ?
+                    `<span style="font-size:11px;color:#576B95;font-weight:500;display:block;margin-bottom:2px;">${escapeHtml(msg.sender)}</span>` :
+                    '';
+                if (avatarUrl) {
+                    row.innerHTML =
+                        `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                } else {
+                    row.innerHTML =
+                        `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div><div class="msg-bubble">${senderName}${escapeHtml(msg.text)}</div>`;
+                }
+                chatMessages.appendChild(row);
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            triggerLazyLoad();
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function splitMessage(text) {
+            const MAX_LEN = 50;
+            if (text.length <= MAX_LEN) return [text];
+            const sentences = text.split(/(?<=[。！？\n])/);
+            const result = [];
+            let current = '';
+            for (const s of sentences) {
+                const trimmed = s.trim();
+                if (!trimmed) continue;
+                if (current && (current.length + trimmed.length > MAX_LEN)) {
+                    result.push(current.trim());
+                    current = trimmed;
+                } else {
+                    current += trimmed;
+                }
+            }
+            if (current.trim()) result.push(current.trim());
+            if (result.length <= 1 && text.length > MAX_LEN) {
+                const subParts = text.split(/(?<=[，,；;])/);
+                const finalResult = [];
+                let sub = '';
+                for (const part of subParts) {
+                    if (sub && (sub.length + part.length > MAX_LEN)) {
+                        finalResult.push(sub.trim());
+                        sub = part;
+                    } else {
+                        sub += part;
+                    }
+                }
+                if (sub.trim()) finalResult.push(sub.trim());
+                return finalResult.length > 0 ? finalResult : [text];
+            }
+            return result.length > 0 ? result : [text];
         }
 
         function getCurrentTimeString() {
@@ -1755,15 +1814,18 @@
             saveChatHistory();
             sortChatList();
 
+            // 加载状态：群聊用群图标，单聊用对方头像
             const loadingRow = document.createElement('div');
             loadingRow.className = 'msg-row other';
             loadingRow.id = 'loadingMsg';
-            let avatarUrl = data.avatarUrl || '';
             if (data.isGroup) {
-                avatarUrl = Object.values(data.members)[0];
+                loadingRow.innerHTML =
+                    `<div class="msg-avatar" style="background:#DDD; display:flex; align-items:center; justify-content:center; font-size:16px;">👥</div><div class="msg-bubble"><span class="loading-dots"><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></span></div>`;
+            } else {
+                let avatarUrl = data.avatarUrl || '';
+                loadingRow.innerHTML =
+                    `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble"><span class="loading-dots"><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></span></div>`;
             }
-            loadingRow.innerHTML =
-                `<div class="msg-avatar"><img class="lazy" data-src="${avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div><div class="msg-bubble"><span style="display:inline-block;width:16px;height:16px;border:2px solid #CCC;border-top-color:#888;border-radius:50%;animation:spin 0.8s linear infinite;"></span></div>`;
             chatMessages.appendChild(loadingRow);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -1775,18 +1837,33 @@
             if (reply) {
                 if (data.isGroup) {
                     const lines = reply.split('\n').filter(line => line.trim());
-                    lines.forEach(line => {
+                    const groupMessages = [];
+                    for (const line of lines) {
                         const match = line.match(/^\[(.*?)\]:\s*(.*)/);
                         if (match && data.members && data.members[match[1]]) {
-                            data.messages.push({ type: 'other', text: match[2], sender: match[1] });
+                            groupMessages.push({ type: 'other', text: match[2], sender: match[1] });
                         } else {
-                            data.messages.push({ type: 'other', text: line, sender: Object.keys(data.members)[0] });
+                            groupMessages.push({ type: 'other', text: line, sender: Object.keys(data.members)[0] });
                         }
-                    });
+                    }
+                    // 群聊消息逐条延时显示
+                    for (const msg of groupMessages) {
+                        data.messages.push(msg);
+                        appendMessage(msg, data);
+                        await delay(1000 + Math.random() * 400);
+                    }
                 } else {
-                    data.messages.push({ type: 'other', text: reply });
+                    // 单聊：智能分段，逐条延时显示
+                    const chunks = splitMessage(reply);
+                    for (const chunk of chunks) {
+                        const trimmed = chunk.trim();
+                        if (trimmed) {
+                            data.messages.push({ type: 'other', text: trimmed });
+                            appendMessage({ type: 'other', text: trimmed }, data);
+                            await delay(1000 + Math.random() * 400);
+                        }
+                    }
                 }
-                renderMessages(data);
                 saveChatHistory();
                 sortChatList();
             }
