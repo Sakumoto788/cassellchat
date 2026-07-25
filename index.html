@@ -1188,9 +1188,9 @@
         })();
 
         // ========== DeepSeek API配置 ==========
-        const DEEPSEEK_API_KEY = 'sk-3524350e952e4529841aef909fb2e01b';
+        const DEEPSEEK_API_KEY = 'sk-854b27395f574ac8a433e07dc7cea2c0';
         const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-        const DEEPSEEK_MODEL = 'deepseek-chat';
+        const DEEPSEEK_MODEL = 'deepseek-v4-flash';
 
         // ========== 角色性格提示词 ==========
         const CHARACTER_PROMPTS = {
@@ -1321,14 +1321,16 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API请求失败: ${response.status}`);
+                    let detail = '';
+                    try { detail = await response.text(); } catch (_) {}
+                    throw new Error(`API请求失败: ${response.status} ${detail}`);
                 }
 
                 const data = await response.json();
                 return data.choices[0]?.message?.content || '';
             } catch (e) {
                 console.error('DeepSeek API调用失败:', e);
-                return '';
+                return null;
             }
         }
 
@@ -1836,6 +1838,43 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
+        // 显示一条消息前，先展示"对方正在输入"的加载气泡（与群聊加载样式一致）
+        async function showWithTyping(msg, data) {
+            const typingRow = document.createElement('div');
+            typingRow.className = 'msg-row other';
+            let avatarHtml;
+            if (data.isGroup) {
+                // 群聊加载时，聊天对象头像先以空白代替
+                avatarHtml = `<div class="msg-avatar" style="background:#DDD;"></div>`;
+            } else if (data.avatarUrl) {
+                avatarHtml = `<div class="msg-avatar"><img class="lazy" data-src="${data.avatarUrl}" alt="" onload="this.classList.add('loaded');this.style.opacity=1;"></div>`;
+            } else {
+                avatarHtml = `<div class="msg-avatar" style="background:#AAA; display:flex; align-items:center; justify-content:center; color:#FFF;">?</div>`;
+            }
+            typingRow.innerHTML = avatarHtml + `<div class="msg-bubble"><span class="loading-dots"><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></span></div>`;
+            chatMessages.appendChild(typingRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            triggerLazyLoad();
+            await delay(1300 + Math.random() * 400);
+            typingRow.remove();
+            appendMessage(msg, data);
+        }
+
+        // 将群聊完整回复按 [发言人]: 文本 解析为多条消息
+        function parseSegments(text) {
+            const segs = [];
+            const re = /\[([^\]]+)\]:\s*/g;
+            let lastMatch = null, m;
+            while ((m = re.exec(text)) !== null) {
+                if (lastMatch !== null) {
+                    segs.push({ sender: lastMatch.name, text: text.slice(lastMatch.end, m.index) });
+                }
+                lastMatch = { name: m[1], end: re.lastIndex };
+            }
+            if (lastMatch !== null) segs.push({ sender: lastMatch.name, text: text.slice(lastMatch.end) });
+            return segs;
+        }
+
         function splitMessage(text) {
             const MAX_LEN = 50;
             if (text.length <= MAX_LEN) return [text];
@@ -1904,7 +1943,7 @@
             loadingRow.id = 'loadingMsg';
             if (data.isGroup) {
                 loadingRow.innerHTML =
-                    `<div class="msg-avatar" style="background:#DDD; display:flex; align-items:center; justify-content:center; font-size:16px;">👥</div><div class="msg-bubble"><span class="loading-dots"><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></span></div>`;
+                    `<div class="msg-avatar" style="background:#DDD;"></div><div class="msg-bubble"><span class="loading-dots"><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span></span></div>`;
             } else {
                 let avatarUrl = data.avatarUrl || '';
                 loadingRow.innerHTML =
@@ -1913,47 +1952,48 @@
             chatMessages.appendChild(loadingRow);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            const reply = await callDeepSeek(currentChat, data.messages);
-            
+            // ===== 非流式：调用 AI 生成完整回复，逐条以"加载图标->消息"显示 =====
             const loadingEl = document.getElementById('loadingMsg');
+            const reply = await callDeepSeek(currentChat, data.messages);
             if (loadingEl) loadingEl.remove();
 
-            if (reply) {
-                if (data.isGroup) {
-                    const lines = reply.split('\n').filter(line => line.trim());
-                    const groupMessages = [];
-                    for (const line of lines) {
-                        const match = line.match(/^\[(.*?)\]:\s*(.*)/);
-                        if (match && data.members && data.members[match[1]]) {
-                            groupMessages.push({ type: 'other', text: match[2], sender: match[1] });
-                        } else {
-                            groupMessages.push({ type: 'other', text: line, sender: Object.keys(data.members)[0] });
-                        }
-                    }
-                    // 群聊消息逐条延时显示
-                    for (const msg of groupMessages) {
-                        data.messages.push(msg);
-                        appendMessage(msg, data);
-                        await delay(1000 + Math.random() * 400);
-                    }
-                } else {
-                    // 单聊：智能分段，逐条延时显示
-                    const chunks = splitMessage(reply);
-                    for (const chunk of chunks) {
-                        const trimmed = chunk.trim();
-                        if (trimmed) {
-                            data.messages.push({ type: 'other', text: trimmed });
-                            appendMessage({ type: 'other', text: trimmed }, data);
-                            await delay(1000 + Math.random() * 400);
-                        }
-                    }
-                }
+            if (reply === null) {
+                const errRow = document.createElement('div');
+                errRow.className = 'msg-row other';
+                errRow.innerHTML = `<div class="msg-bubble" style="background:#ffe5e5;color:#c0392b;">AI 暂时无法回复 😢（可能是密钥失效、网络或跨域问题）</div>`;
+                chatMessages.appendChild(errRow);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 saveChatHistory();
                 sortChatList();
+                return;
             }
+
+            if (data.isGroup) {
+                const segs = parseSegments(reply);
+                for (const seg of segs) {
+                    const t = seg.text.trim();
+                    if (!t) continue;
+                    const msg = { type: 'other', text: t, sender: seg.sender || undefined };
+                    data.messages.push(msg);
+                    await showWithTyping(msg, data);
+                }
+            } else {
+                const chunks = splitMessage(reply);
+                for (const chunk of chunks) {
+                    const trimmed = chunk.trim();
+                    if (trimmed) {
+                        const msg = { type: 'other', text: trimmed };
+                        data.messages.push(msg);
+                        await showWithTyping(msg, data);
+                    }
+                }
+            }
+            saveChatHistory();
+            sortChatList();
+
         }
 
-        function escapeHtml(str) {
+function escapeHtml(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
